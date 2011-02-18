@@ -1,5 +1,5 @@
-#ifndef TILER_GL_SCENE_H
-#define TILER_GL_SCENE_H
+#ifndef TILER_SHAPE_H
+#define TILER_SHAPE_H
 
 
 /****************************************************************
@@ -23,44 +23,44 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
-#include <QGLWidget>
+#include <QVector3D>
 #include <QList>
-#include "shape.h"
+#include <QColor>
+
+#include "poly.h"
 
 namespace tiler
 {
-
-class GLScene : public QGLWidget 
+class Shape 
 {
-Q_OBJECT
-
 public:
-
-  GLScene (QWidget * parent=0);
-
-  void Init ();
-  void SetRGB (float r, float g, float b);
-
-  void Resize ();
-  void Paint ();
-  void LoadShape (const QString & filename,
-                    const QVector3D & position,
-                          qreal size);
-
-protected:
-
-  void initializeGL ();
-  void resizeGL (int width, int height);
-  void paintGL ();
   
+  Shape ();
+
+  bool Load (const QString & filename);
+
+  void SetSize (qreal size);
+  void SetPosition (const QVector3D & position);
+  void SetColor (const QColor & color);
+
+  QVector3D Position () const;
+  qreal     Size () const;
+  QColor    Color () const;
+
+  int Id () { return theId; }
+
+  void paintGL () const;
+
 private:
 
-  float    red;
-  float    green;
-  float    blue;
+  QList <Poly>  theSides;
+  QVector3D     thePos;
+  qreal         theSize;
+  QColor        theColor;
+  int           theId;
 
-  QList <Shape>  shapes;
-
+  static int    idCount;
+  
 };
 
 } // namespace

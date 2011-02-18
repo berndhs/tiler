@@ -1,5 +1,5 @@
-#ifndef TILER_GL_SCENE_H
-#define TILER_GL_SCENE_H
+#include "poly.h"
+
 
 
 /****************************************************************
@@ -22,47 +22,46 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
-
-#include <QGLWidget>
-#include <QList>
-#include "shape.h"
+#include <QtOpenGL>
+#include <QDebug>
 
 namespace tiler
 {
 
-class GLScene : public QGLWidget 
+Poly::Poly ()
 {
-Q_OBJECT
+}
 
-public:
+void
+Poly::AddPoint (const QVector3D & point)
+{
+  points += point;
+}
 
-  GLScene (QWidget * parent=0);
+void
+Poly::AddPoint (qreal x, qreal y, qreal z)
+{
+  points += QVector3D (x,y,z);
+}
 
-  void Init ();
-  void SetRGB (float r, float g, float b);
+int
+Poly::Corners () const
+{
+  return points.count();
+}
 
-  void Resize ();
-  void Paint ();
-  void LoadShape (const QString & filename,
-                    const QVector3D & position,
-                          qreal size);
-
-protected:
-
-  void initializeGL ();
-  void resizeGL (int width, int height);
-  void paintGL ();
-  
-private:
-
-  float    red;
-  float    green;
-  float    blue;
-
-  QList <Shape>  shapes;
-
-};
+void
+Poly::paintGL () const
+{
+  glBegin (GL_POLYGON);
+  int nc = points.count();
+  for (int c=0; c<nc; c++) {
+    glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
+    qDebug () << " Poly::paintGL vertex " << points.at(c).x()
+                                          << points.at(c).y()
+                                          << points.at(c).z();
+  }
+  glEnd ();
+}
 
 } // namespace
-
-#endif

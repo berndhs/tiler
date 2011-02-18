@@ -76,6 +76,8 @@ HEADERS = \
           src/version.h \
           src/helpview.h \
           src/gl-scene.h \
+          src/poly.h \
+          src/shape.h \
 
 
 SOURCES = \
@@ -88,4 +90,6 @@ SOURCES = \
           src/version.cpp \
           src/helpview.cpp \
           src/gl-scene.cpp \
+          src/poly.cpp \
+          src/shape.cpp \
 

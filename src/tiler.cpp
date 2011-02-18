@@ -58,6 +58,15 @@ Tiler::Init (QApplication &ap)
   app = &ap;
   connect (app, SIGNAL (lastWindowClosed()), this, SLOT (Exiting()));
   Settings().sync();
+  mainUi.scene->LoadShape (":/shapes/square.dat",
+                             QVector3D (10,10,0),
+                             2.0);
+  mainUi.scene->LoadShape (":/shapes/square.dat",
+                             QVector3D (10,15,0),
+                             2.0);
+  mainUi.scene->LoadShape (":/shapes/turn.dat",
+                             QVector3D (20,50,0),
+                             2.0);
   initDone = true;
 }
 

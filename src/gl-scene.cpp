@@ -42,6 +42,18 @@ GLScene::Init ()
 }
 
 void
+GLScene::LoadShape (const QString & filename,
+                    const QVector3D & position,
+                          qreal size)
+{
+  Shape s;
+  s.Load (filename);
+  s.SetSize (size);
+  s.SetPosition (position);
+  shapes += s;
+}
+
+void
 GLScene::initializeGL ()
 {
   qDebug () << "GLScene::initializeGL";
@@ -101,7 +113,11 @@ GLScene::paintGL ()
   glLoadIdentity ();    
   glColor3f(1.0, 1.0, 1.0);
   glRectf(-25.0, -25.0, 25.0, 25.0);
-
+  int nShapes = shapes.count();
+  qDebug () << "      shape count " << nShapes;
+  for (int s=0; s<nShapes; s++) {
+    shapes.at(s).paintGL ();
+  }
 }
 
 } // namespace
