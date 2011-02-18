@@ -110,9 +110,17 @@ GLScene::paintGL ()
 {
   qDebug () << "GLScene::paint GL";  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
-  glLoadIdentity ();    
+  glOrtho(-50.0, 50.0, -50.0, 50.0, -1.0, 1.0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
   glColor3f(1.0, 1.0, 1.0);
-  glRectf(-25.0, -25.0, 25.0, 25.0);
+  //glRectf(-25.0, -25.0, 25.0, 25.0);
+  Shape s0;
+  s0.Load (":/shapes/turn.dat");
+  s0.SetColor (Qt::yellow);
+  s0.SetSize (3.0);
+  s0.SetPosition (QVector3D(-5,0,0));
+  s0.paintGL ();
   int nShapes = shapes.count();
   qDebug () << "      shape count " << nShapes;
   for (int s=0; s<nShapes; s++) {

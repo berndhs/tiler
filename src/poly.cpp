@@ -53,6 +53,7 @@ Poly::Corners () const
 void
 Poly::paintGL () const
 {
+  glPushMatrix ();
   glBegin (GL_POLYGON);
   int nc = points.count();
   for (int c=0; c<nc; c++) {
@@ -62,6 +63,7 @@ Poly::paintGL () const
                                           << points.at(c).z();
   }
   glEnd ();
+  glPopMatrix ();
 }
 
 } // namespace

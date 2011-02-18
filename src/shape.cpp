@@ -108,10 +108,14 @@ void
 Shape::paintGL () const
 {
   qDebug () << "Shape::paintGL id " << theId << " sides " << theSides.count();
+  glPushMatrix ();
   glColor3f (theColor.redF(), theColor.greenF(), theColor.blueF());
+  glTranslatef (thePos.x(),thePos.y(),thePos.z());
+  glScalef (theSize, theSize, theSize);
   for (int p=0; p<theSides.count(); p++) {
     theSides.at(p).paintGL ();
   }
+  glPopMatrix ();
 }
 
 
