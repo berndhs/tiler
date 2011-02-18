@@ -3,7 +3,7 @@
 /****************************************************************
  * This file is distributed under the following license:
  *
- * Copyright (C) 2010, Bernd Stramm
+ * Copyright (C) 2011, Bernd Stramm
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -30,6 +30,8 @@
 #include <QMessageBox>
 #include <QTimer>
 #include <QCursor>
+
+#include "gl-scene.h"
 
 using namespace deliberate;
 
@@ -97,6 +99,8 @@ Tiler::Connect ()
            this, SLOT (License ()));
   connect (mainUi.actionRestart, SIGNAL (triggered()),
            this, SLOT (Restart ()));
+  connect (mainUi.redrawButton, SIGNAL (clicked()),
+           this, SLOT (Recolor()));
 }
 
 void
@@ -174,6 +178,19 @@ Tiler::License ()
   if (helpView) {
     helpView->Show ("qrc:/help/LICENSE.txt");
   }
+}
+
+void
+Tiler::Recolor ()
+{
+  qDebug () << " Recolor " << mainUi.redBox->value()
+                           << mainUi.greenBox->value()
+                           << mainUi.blueBox->value() ;
+  mainUi.scene->SetRGB (mainUi.redBox->value(),
+                        mainUi.greenBox->value(),
+                        mainUi.blueBox->value());
+  mainUi.scene->Resize ();
+  mainUi.scene->update ();
 }
 
 

@@ -1,5 +1,6 @@
-#ifndef TILER_H
-#define TILER_H
+#ifndef TILER_GL_SCENE_H
+#define TILER_GL_SCENE_H
+
 
 /****************************************************************
  * This file is distributed under the following license:
@@ -21,60 +22,37 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
-#include <QMainWindow>
-#include "ui_tiler.h"
-#include "config-edit.h"
-#include "helpview.h"
 
-class QApplication;
+#include <QGLWidget>
 
-using namespace deliberate;
-
-namespace tiler 
+namespace tiler
 {
 
-class Tiler : public QMainWindow
+class GLScene : public QGLWidget 
 {
 Q_OBJECT
 
 public:
 
-  Tiler (QWidget *parent=0);
+  GLScene (QWidget * parent=0);
 
-  void  Init (QApplication &ap);
-  bool  Run ();
-  bool  Again ();
+  void Init ();
+  void SetRGB (float r, float g, float b);
 
-  void  AddConfigMessages (const QStringList & cm) 
-           { configMessages.append (cm); }
+  void Resize ();
+  void Paint ();
 
-  void closeEvent ( QCloseEvent *event);
+protected:
 
-private slots:
-
-  void Quit ();
-  void Restart ();
-  void EditSettings ();
-  void SetSettings ();
-  void About ();
-  void License ();
-  void Exiting ();
-  void Recolor ();
-
+  void initializeGL ();
+  void resizeGL (int width, int height);
+  void paintGL ();
+  
 private:
 
-  void Connect ();
-  void CloseCleanup ();
-
-  bool             initDone;
-  QApplication    *app;
-  Ui_TilerMain    mainUi;
- 
-  ConfigEdit       configEdit;
-  QStringList      configMessages;
-
-  deliberate::HelpView        *helpView;
-  bool             runAgain;
+  float    red;
+  float    green;
+  float    blue;
 
 };
 

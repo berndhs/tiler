@@ -1,11 +1,11 @@
 #
-# nothing application
+# tiling game
 #
 
 #/****************************************************************
 # * This file is distributed under the following license:
 # *
-# * Copyright (C) 2010, Bernd Stramm
+# * Copyright (C) 2011, Bernd Stramm
 # *
 # *  This program is free software; you can redistribute it and/or
 # *  modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ MYNAME = tiler
 
 TEMPLATE = app
 
-QT += core gui sql webkit network xml 
+QT += core gui sql webkit network xml opengl
 CONFIG += debug_and_release
 
 MAKEFILE = Make_$${MYNAME}
@@ -75,6 +75,7 @@ HEADERS = \
           src/deliberate.h \
           src/version.h \
           src/helpview.h \
+          src/gl-scene.h \
 
 
 SOURCES = \
@@ -86,4 +87,5 @@ SOURCES = \
           src/deliberate.cpp \
           src/version.cpp \
           src/helpview.cpp \
+          src/gl-scene.cpp \
 
