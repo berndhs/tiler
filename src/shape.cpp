@@ -108,6 +108,7 @@ void
 Shape::paintGL () const
 {
   qDebug () << "Shape::paintGL id " << theId << " sides " << theSides.count();
+  qDebug () << "     position " << thePos;
   glPushMatrix ();
   glColor3f (theColor.redF(), theColor.greenF(), theColor.blueF());
   glTranslatef (thePos.x(),thePos.y(),thePos.z());

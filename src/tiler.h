@@ -60,6 +60,7 @@ private slots:
   void License ();
   void Exiting ();
   void Recolor ();
+  void StepShapes ();
 
 private:
 
@@ -75,6 +76,8 @@ private:
 
   deliberate::HelpView        *helpView;
   bool             runAgain;
+
+  QList <int>   shapes;
 
 };
 

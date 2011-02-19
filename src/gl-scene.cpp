@@ -41,16 +41,17 @@ GLScene::Init ()
   initializeGL ();
 }
 
-void
+int
 GLScene::LoadShape (const QString & filename,
                     const QVector3D & position,
                           qreal size)
 {
-  Shape s;
-  s.Load (filename);
-  s.SetSize (size);
-  s.SetPosition (position);
-  shapes += s;
+  Shape * s = new Shape;
+  s->Load (filename);
+  s->SetSize (size);
+  s->SetPosition (position);
+  shapes[s->Id()] = s;
+  return s->Id();
 }
 
 void
@@ -60,14 +61,6 @@ GLScene::initializeGL ()
   glClearColor (red, green, blue, 0.0);
   glEnable(GL_DEPTH_TEST);
   glShadeModel (GL_FLAT);
-  glMatrixMode (GL_PROJECTION);
-  glLoadIdentity ();
-#if 0
-  glFrustum (-10, 10, -10, 10, 1.0, 1000.0);
-  glMatrixMode (GL_MODELVIEW);
-  glLoadIdentity ();
-  glEnable(GL_MULTISAMPLE);
-#endif
 
 }
 
@@ -78,8 +71,8 @@ GLScene::resizeGL (int width, int height)
   glClearColor (red, green, blue, 0.0);
   glViewport(0, 0, GLint(width), GLint(height));
   glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(-50.0, 50.0, -50.0, 50.0, -1.0, 1.0);
+  glLoadIdentity(); 
+  glFrustum(-50.0, 50.0, -50.0, 50.0, 10, 20.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
@@ -110,21 +103,31 @@ GLScene::paintGL ()
 {
   qDebug () << "GLScene::paint GL";  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
-  glOrtho(-50.0, 50.0, -50.0, 50.0, -1.0, 1.0);
   glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glColor3f(1.0, 1.0, 1.0);
-  //glRectf(-25.0, -25.0, 25.0, 25.0);
+  gluLookAt (0,0,1, 0,0,10, 0,-1,0);
   Shape s0;
   s0.Load (":/shapes/turn.dat");
   s0.SetColor (Qt::yellow);
-  s0.SetSize (3.0);
-  s0.SetPosition (QVector3D(-5,0,0));
+  s0.SetSize (4.0);
+  s0.SetPosition (QVector3D(-5,0,15.1));
+  glPushMatrix ();
+  glRotatef (90, 0,0,1);
   s0.paintGL ();
+  glPopMatrix ();
   int nShapes = shapes.count();
   qDebug () << "      shape count " << nShapes;
-  for (int s=0; s<nShapes; s++) {
-    shapes.at(s).paintGL ();
+  QMap<int,Shape*>::iterator sit;
+  for (sit=shapes.begin(); sit!=shapes.end(); sit++) {
+    sit.value()->paintGL ();
+  }
+}
+
+void
+GLScene::MoveShape (int shapeId, const QVector3D & translate)
+{
+  if (shapes.contains (shapeId)) {
+    Shape * s = shapes[shapeId];
+    s->SetPosition (s->Position () + translate);
   }
 }
 

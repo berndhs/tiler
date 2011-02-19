@@ -24,7 +24,7 @@
  ****************************************************************/
 
 #include <QGLWidget>
-#include <QList>
+#include <QMap>
 #include "shape.h"
 
 namespace tiler
@@ -43,9 +43,10 @@ public:
 
   void Resize ();
   void Paint ();
-  void LoadShape (const QString & filename,
+  int LoadShape (const QString & filename,
                     const QVector3D & position,
                           qreal size);
+  void MoveShape (int shapeId, const QVector3D & translate);
 
 protected:
 
@@ -59,7 +60,7 @@ private:
   float    green;
   float    blue;
 
-  QList <Shape>  shapes;
+  QMap <int,Shape*>  shapes;
 
 };
 
