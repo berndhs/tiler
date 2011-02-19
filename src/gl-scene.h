@@ -26,6 +26,7 @@
 #include <QGLWidget>
 #include <QMap>
 #include "shape.h"
+#include "tiler-types.h"
 
 namespace tiler
 {
@@ -47,6 +48,7 @@ public:
                     const QVector3D & position,
                           qreal size);
   void MoveShape (int shapeId, const QVector3D & translate);
+  void RotateShape (int shapeId, qreal degrees, AxisType axis);
 
 protected:
 

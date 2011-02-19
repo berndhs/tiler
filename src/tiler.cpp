@@ -206,6 +206,7 @@ Tiler::StepShapes ()
 {
   for (int s=0; s<shapes.count(); s++) {
     mainUi.scene->MoveShape (shapes.at(s), QVector3D (-1,-1,0.2));
+    mainUi.scene->RotateShape (shapes.at(s), 15, Axis_Y);
   }
   mainUi.scene->update ();
 }

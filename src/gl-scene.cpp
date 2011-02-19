@@ -130,5 +130,14 @@ GLScene::MoveShape (int shapeId, const QVector3D & translate)
     s->SetPosition (s->Position () + translate);
   }
 }
+  
+void 
+GLScene::RotateShape (int shapeId, qreal degrees, AxisType axis)
+{
+  if (shapes.contains (shapeId)) {
+    Shape * s = shapes[shapeId];
+    s->SetRotation (axis, s->Rotation (axis) + degrees);
+  }
+}
 
 } // namespace

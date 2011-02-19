@@ -78,6 +78,7 @@ HEADERS = \
           src/gl-scene.h \
           src/poly.h \
           src/shape.h \
+          src/tiler-types.h \
 
 
 SOURCES = \

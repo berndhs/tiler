@@ -35,7 +35,9 @@ int Shape::idCount (1);
 
 Shape::Shape ()
   :theColor (Qt::green),
-   theId (idCount++)
+   theId (idCount++),
+   thePos (QVector3D (0,0,0)),
+   theRot (QVector3D (0,0,0))
 {
 }
 
@@ -98,6 +100,42 @@ Shape::Size () const
   return theSize;
 }
 
+qreal
+Shape::Rotation (AxisType axis) const
+{
+  switch (axis) {
+  case Axis_X:
+    return theRot.x();
+    break;
+  case Axis_Y:
+    return theRot.y();
+    break;
+  case Axis_Z:
+    return theRot.z();
+    break;
+  default:
+    return 0.0;
+  }
+}
+
+void
+Shape::SetRotation (AxisType axis, qreal degrees)
+{
+  switch (axis) {
+  case Axis_X:
+    theRot.setX(degrees);
+    break;
+  case Axis_Y:
+    theRot.setY(degrees);
+    break;
+  case Axis_Z:
+    theRot.setZ(degrees);
+    break;
+  default:
+    break;
+  }
+}
+
 QColor
 Shape::Color () const
 {
@@ -112,6 +150,9 @@ Shape::paintGL () const
   glPushMatrix ();
   glColor3f (theColor.redF(), theColor.greenF(), theColor.blueF());
   glTranslatef (thePos.x(),thePos.y(),thePos.z());
+  glRotatef (theRot.x(), 1,0,0);
+  glRotatef (theRot.y(), 0,1,0);
+  glRotatef (theRot.z(), 0,0,1);
   glScalef (theSize, theSize, theSize);
   for (int p=0; p<theSides.count(); p++) {
     theSides.at(p).paintGL ();

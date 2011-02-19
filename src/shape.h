@@ -28,6 +28,7 @@
 #include <QColor>
 
 #include "poly.h"
+#include "tiler-types.h"
 
 namespace tiler
 {
@@ -42,10 +43,12 @@ public:
   void SetSize (qreal size);
   void SetPosition (const QVector3D & position);
   void SetColor (const QColor & color);
+  void SetRotation (AxisType axis, qreal degrees);
 
   QVector3D Position () const;
   qreal     Size () const;
   QColor    Color () const;
+  qreal     Rotation (AxisType axis) const;
 
   int Id () { return theId; }
 
@@ -53,11 +56,12 @@ public:
 
 private:
 
-  QList <Poly>  theSides;
-  QVector3D     thePos;
   qreal         theSize;
   QColor        theColor;
   int           theId;
+  QVector3D     thePos;
+  QVector3D     theRot;
+  QList <Poly>  theSides;
 
   static int    idCount;
   
