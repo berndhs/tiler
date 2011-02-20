@@ -39,8 +39,8 @@ MatchBond_Ionic (const Bond & thisEnd, const Bond & otherEnd)
 {
   if (thisEnd.Type() == otherEnd.Type() 
       && thisEnd.Type() == Bond_Ionic) {
-    double v1 = thisEnd.Value ();
-    double v2 = otherEnd.Value ();
+    double v1 = thisEnd.Remaining ();
+    double v2 = otherEnd.Remaining ();
     if (SameSign (v1,v2)) {
       return - qMax (qAbs (v1), qAbs (v2));
     } else {
@@ -55,8 +55,8 @@ MatchBond_Covalent (const Bond & thisEnd, const Bond & otherEnd)
 {
   if (thisEnd.Type() == otherEnd.Type()
       && thisEnd.Type() == Bond_Covalent) {
-    double v1 = thisEnd.Value ();
-    double v2 = otherEnd.Value ();
+    double v1 = thisEnd.Remaining ();
+    double v2 = otherEnd.Remaining ();
     if (SameSign (v1,v2)) {
       return - qMax (qAbs (v1), qAbs (v2));
     } else {
