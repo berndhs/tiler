@@ -32,7 +32,8 @@ int Block::idCount (1);
 Block::Block ()
   :theId (idCount++),
    position (QVector3D (0,0,0)),
-   orientation (QQuaternion())
+   orientation (QQuaternion()),
+   color (Qt::red)
 {
   noBond.SetType (Bond_None);
 }
@@ -42,7 +43,8 @@ Block::Block (const Block & other)
    noBond (other.noBond),
    bonds (other.bonds),
    position (other.position),
-   orientation (other.orientation)
+   orientation (other.orientation),
+   color (other.color)
 {
 }
 
@@ -68,6 +70,18 @@ QQuaternion
 Block::Orientation () const
 {
   return orientation;
+}
+
+QColor
+Block::Color () const
+{
+  return color;
+}
+
+void
+Block::SetColor (const QColor & col)
+{
+  color = col;
 }
 
 void
@@ -129,7 +143,7 @@ void
 Block::paintGL ()
 {
   glPushMatrix ();
-  glColor3f (1,0,0);
+  glColor3f (color.redF(), color.greenF(), color.blueF());
   glTranslatef (position.x(), position.y(), position.z());
   qreal w = orientation.scalar ();
   qreal angle = 2* acos (w) * (180.0 / M_PI);

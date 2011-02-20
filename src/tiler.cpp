@@ -32,6 +32,7 @@
 #include <QCursor>
 
 #include "gl-scene.h"
+#include "block.h"
 
 using namespace deliberate;
 
@@ -91,6 +92,10 @@ Tiler::Run ()
   resize (newsize);
   Settings().setValue ("sizes/main",newsize);
   show ();
+  Block * blk = new Block;
+  blk->SetShape (":/shapes/square.dat");
+  blk->SetPosition (QVector3D (10,10,20));
+  mainUi.scene->AddBlock (blk);
   return true;
 }
 

@@ -28,6 +28,7 @@
 #include "shape.h"
 #include <QVector3D>
 #include <QQuaternion>
+#include <QColor>
 
 namespace tiler
 {
@@ -45,9 +46,11 @@ public:
 
   QVector3D Position () const;
   QQuaternion Orientation () const;
+  QColor Color () const;
 
   void SetPosition (const QVector3D & newPos);
   void SetOrientation (const QQuaternion & newOrient);
+  void SetColor (const QColor & col);
 
   void Move (const QVector3D & delta);
   void Rotate (AxisType axis, float degrees);
@@ -73,6 +76,7 @@ private:
 
   QVector3D     position;
   QQuaternion   orientation;
+  QColor        color;
 
   Shape         shape;
 
