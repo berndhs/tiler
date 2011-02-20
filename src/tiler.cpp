@@ -66,12 +66,6 @@ Tiler::Init (QApplication &ap)
   app = &ap;
   connect (app, SIGNAL (lastWindowClosed()), this, SLOT (Exiting()));
   Settings().sync();
-  shapes.append (mainUi.scene->LoadShape (":/shapes/square.dat",
-                             QVector3D (10,10,12),
-                             4.0));
-  shapes.append (mainUi.scene->LoadShape (":/shapes/turn.dat",
-                             QVector3D (20,20,12),
-                             4.0));
   initDone = true;
 }
 
@@ -220,10 +214,6 @@ Tiler::Recolor ()
 void
 Tiler::StepShapes ()
 {
-  for (int s=0; s<shapes.count(); s++) {
-    mainUi.scene->MoveShape (shapes.at(s), QVector3D (-1,-1,0.2));
-    mainUi.scene->RotateShape (shapes.at(s), 15, Axis_Y);
-  }
   mainUi.scene->update ();
 }
 

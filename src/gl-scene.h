@@ -25,7 +25,7 @@
 
 #include <QGLWidget>
 #include <QMap>
-#include "shape.h"
+#include "block.h"
 #include "tiler-types.h"
 
 namespace tiler
@@ -50,11 +50,7 @@ public:
 
   void Resize ();
   void Paint ();
-  int LoadShape (const QString & filename,
-                    const QVector3D & position,
-                          qreal size);
-  void MoveShape (int shapeId, const QVector3D & translate);
-  void RotateShape (int shapeId, qreal degrees, AxisType axis);
+  int  AddBlock (Block * b);
 
 protected:
 
@@ -74,7 +70,7 @@ private:
   float    focusY;
   float    focusZ;
 
-  QMap <int,Shape*>  shapes;
+  QMap <int,Block*>  blocks;
 
 };
 

@@ -78,8 +78,6 @@ private:
   deliberate::HelpView        *helpView;
   bool             runAgain;
 
-  QList <int>   shapes;
-
   QVector3D   eye;
   QVector3D   focus;
 

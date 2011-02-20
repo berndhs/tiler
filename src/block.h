@@ -23,8 +23,11 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
+#include "tiler-types.h"
 #include "bond.h"
+#include "shape.h"
 #include <QVector3D>
+#include <QQuaternion>
 
 namespace tiler
 {
@@ -36,7 +39,24 @@ public:
   Block ();
   Block (const Block & other);
 
+  int Id () { return theId; }
+
   Bond & BondSite (const QVector3D & direction);
+
+  QVector3D Position () const;
+  QQuaternion Orientation () const;
+
+  void SetPosition (const QVector3D & newPos);
+  void SetOrientation (const QQuaternion & newOrient);
+
+  void Move (const QVector3D & delta);
+  void Rotate (AxisType axis, float degrees);
+  void Rotate (const QVector3D & axis, float degrees);
+
+  void SetShape (const Shape & s);
+  void SetShape (const QString & filename);
+
+  void paintGL ();
 
 private:
 
@@ -47,8 +67,16 @@ private:
 
   typedef QList <BondSlot> BondList;
 
-  Bond         noBond;
-  BondList     bonds;
+  int           theId;
+  Bond          noBond;
+  BondList      bonds;
+
+  QVector3D     position;
+  QQuaternion   orientation;
+
+  Shape         shape;
+
+  static int    idCount;
 };
 
 } // namespace

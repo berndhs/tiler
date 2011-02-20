@@ -48,16 +48,13 @@ GLScene::Init ()
 }
 
 int
-GLScene::LoadShape (const QString & filename,
-                    const QVector3D & position,
-                          qreal size)
+GLScene::AddBlock (Block *b)
 {
-  Shape * s = new Shape;
-  s->Load (filename);
-  s->SetSize (size);
-  s->SetPosition (position);
-  shapes[s->Id()] = s;
-  return s->Id();
+  if (b) {
+    blocks[b->Id()] = b;
+    return b->Id();
+  }
+  return -1;
 }
 
 void
@@ -112,46 +109,23 @@ GLScene::paintGL ()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity ();
   gluLookAt (eyeX,eyeY,eyeZ, focusX,focusY,focusZ, 0,-1,0);
-  Shape s0;
-  s0.Load (":/shapes/turn.dat");
-  s0.SetColor (Qt::yellow);
-  s0.SetSize (4.0);
-  s0.SetPosition (QVector3D(-5,0,15.1));
   glPushMatrix ();
   glRotatef (90, 0,0,1);
-  s0.paintGL ();
   glPopMatrix ();
-  int nShapes = shapes.count();
-  qDebug () << "      shape count " << nShapes;
-  QMap<int,Shape*>::iterator sit;
-  for (sit=shapes.begin(); sit!=shapes.end(); sit++) {
-    sit.value()->paintGL ();
+  int nBlocks = blocks.count();
+  qDebug () << "      block count " << nBlocks;
+  QMap<int,Block*>::iterator bit;
+  for (bit=blocks.begin(); bit!=blocks.end(); bit++) {
+    bit.value()->paintGL ();
   }
   glFlush ();
 }
 
-void
-GLScene::MoveShape (int shapeId, const QVector3D & translate)
-{
-  if (shapes.contains (shapeId)) {
-    Shape * s = shapes[shapeId];
-    s->SetPosition (s->Position () + translate);
-  }
-}
-  
-void 
-GLScene::RotateShape (int shapeId, qreal degrees, AxisType axis)
-{
-  if (shapes.contains (shapeId)) {
-    Shape * s = shapes[shapeId];
-    s->SetRotation (axis, s->Rotation (axis) + degrees);
-  }
-}
 
 QVector3D
 GLScene::Eye () const
 {
-  return QVector3D (eyeZ, eyeY, eyeZ);
+  return QVector3D (eyeX, eyeY, eyeZ);
 }
 
 QVector3D
