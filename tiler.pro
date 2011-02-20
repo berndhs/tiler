@@ -79,6 +79,9 @@ HEADERS = \
           src/poly.h \
           src/shape.h \
           src/tiler-types.h \
+          src/bond.h \
+          src/bond-functions.h \
+          src/block.h \
 
 
 SOURCES = \
@@ -93,4 +96,7 @@ SOURCES = \
           src/gl-scene.cpp \
           src/poly.cpp \
           src/shape.cpp \
+          src/bond.cpp \
+          src/bond-functions.cpp \
+          src/block.cpp \
 

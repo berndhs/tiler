@@ -66,7 +66,9 @@ Shape::Load (const QString & filename)
         theSides += poly;
       }
     }
+    ok = theSides.count() > 0;
   }
+  return ok;
 }
 
 
