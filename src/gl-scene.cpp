@@ -28,7 +28,13 @@ namespace tiler
 {
 
 GLScene::GLScene (QWidget * parent)
-  :QGLWidget (parent)
+  :QGLWidget (parent),
+   eyeX (0),
+   eyeY (0),
+   eyeZ (1),
+   focusX (0),
+   focusY (0),
+   focusZ (10)
 {
   qDebug () << "GLScene::GLScene constructor";
   qDebug () << "         parent " << parent;    
@@ -104,7 +110,8 @@ GLScene::paintGL ()
   qDebug () << "GLScene::paint GL";  
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
   glMatrixMode(GL_MODELVIEW);
-  gluLookAt (0,0,1, 0,0,10, 0,-1,0);
+  glLoadIdentity ();
+  gluLookAt (eyeX,eyeY,eyeZ, focusX,focusY,focusZ, 0,-1,0);
   Shape s0;
   s0.Load (":/shapes/turn.dat");
   s0.SetColor (Qt::yellow);
@@ -120,6 +127,7 @@ GLScene::paintGL ()
   for (sit=shapes.begin(); sit!=shapes.end(); sit++) {
     sit.value()->paintGL ();
   }
+  glFlush ();
 }
 
 void
@@ -140,4 +148,31 @@ GLScene::RotateShape (int shapeId, qreal degrees, AxisType axis)
   }
 }
 
+QVector3D
+GLScene::Eye () const
+{
+  return QVector3D (eyeZ, eyeY, eyeZ);
+}
+
+QVector3D
+GLScene::Focus () const
+{ 
+  return QVector3D (focusX, focusY, focusZ);
+}
+
+void
+GLScene::SetEye (const QVector3D & newEye)
+{
+  eyeX = newEye.x();
+  eyeY = newEye.y();
+  eyeZ = newEye.z();
+}
+
+void
+GLScene::SetFocus (const QVector3D & newFocus)
+{
+  focusX = newFocus.x();
+  focusY = newFocus.y();
+  focusZ = newFocus.z();
+}
 } // namespace

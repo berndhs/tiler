@@ -42,6 +42,12 @@ public:
   void Init ();
   void SetRGB (float r, float g, float b);
 
+  QVector3D Eye () const;
+  QVector3D Focus () const;
+
+  void SetEye (const QVector3D & newEye);
+  void SetFocus (const QVector3D & newFocus);
+
   void Resize ();
   void Paint ();
   int LoadShape (const QString & filename,
@@ -61,6 +67,12 @@ private:
   float    red;
   float    green;
   float    blue;
+  float    eyeX;
+  float    eyeY;
+  float    eyeZ;
+  float    focusX;
+  float    focusY;
+  float    focusZ;
 
   QMap <int,Shape*>  shapes;
 

@@ -48,6 +48,14 @@ Tiler::Tiler (QWidget *parent)
 {
   mainUi.setupUi (this);
   mainUi.actionRestart->setEnabled (false);
+  eye = mainUi.scene->Eye();
+  focus = mainUi.scene->Focus();
+  mainUi.eyeX->setValue (eye.x());
+  mainUi.eyeY->setValue (eye.y());
+  mainUi.eyeZ->setValue (eye.z());
+  mainUi.focusX->setValue (focus.x());
+  mainUi.focusY->setValue (focus.y());
+  mainUi.focusZ->setValue (focus.z());
   helpView = new HelpView (this);
   Connect ();
 }
@@ -197,6 +205,14 @@ Tiler::Recolor ()
   mainUi.scene->SetRGB (mainUi.redBox->value(),
                         mainUi.greenBox->value(),
                         mainUi.blueBox->value());
+  eye.setX (mainUi.eyeX->value());
+  eye.setY (mainUi.eyeY->value());
+  eye.setZ (mainUi.eyeZ->value());
+  focus.setX (mainUi.focusX->value());
+  focus.setY (mainUi.focusY->value());
+  focus.setZ (mainUi.focusZ->value());
+  mainUi.scene->SetEye (eye);
+  mainUi.scene->SetFocus (focus);
   mainUi.scene->Resize ();
   mainUi.scene->update ();
 }

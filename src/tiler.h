@@ -25,6 +25,7 @@
 #include "ui_tiler.h"
 #include "config-edit.h"
 #include "helpview.h"
+#include <QVector3D>
 
 class QApplication;
 
@@ -78,6 +79,9 @@ private:
   bool             runAgain;
 
   QList <int>   shapes;
+
+  QVector3D   eye;
+  QVector3D   focus;
 
 };
 
