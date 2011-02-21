@@ -65,6 +65,9 @@ Poly::paintGL (const QColor & color, const QColor & edgeColor) const
   }
   glEnd ();
   glColor3f (edgeColor.redF(), edgeColor.greenF(), edgeColor.blueF());
+  GLfloat oldWidth;
+  glGetFloatv (GL_LINE_WIDTH, &oldWidth);
+  glLineWidth (1.5);
   glBegin (GL_LINES);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
@@ -73,6 +76,7 @@ Poly::paintGL (const QColor & color, const QColor & edgeColor) const
                                           << points.at(c).z();
   }
   glEnd ();
+  glLineWidth (oldWidth);
   glPopMatrix ();
 }
 

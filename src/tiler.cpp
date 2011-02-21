@@ -112,7 +112,7 @@ Tiler::Run ()
   Block * blk = new Block;
   blk->SetShape (":/shapes/square.dat");
   blk->SetPosition (QVector3D (10,10,20));
-  blk->SetScale (8.0);
+  blk->SetScale (20.0);
   Bond bond (Bond_Covalent);
   bond.SetValue (2.0);
   blk->AddBond (bond, QVector3D (1,1,0));
@@ -123,8 +123,8 @@ Tiler::Run ()
 
   blk = new Block;
   blk->SetShape (":/shapes/square.dat");
-  blk->SetPosition (QVector3D (10,20,20));
-  blk->SetScale (12.0);
+  blk->SetPosition (QVector3D (10,50,20));
+  blk->SetScale (20.0);
   blk->AddBond (bond, QVector3D (1,1,0));
   blk->AddBond (bond, QVector3D (0,1,0));
   blk->Rotate (Axis_Z, 60);
