@@ -63,6 +63,8 @@ Tiler::Tiler (QWidget *parent)
   helpView = new HelpView (this);
   blockModel = new QStringListModel (this);
   mainUi.blockList->setModel (blockModel);
+  mainUi.viewControl->show();
+  mainUi.blockControl->hide ();
   Connect ();
 }
 
@@ -141,6 +143,12 @@ Tiler::Connect ()
            this, SLOT (StepShapes ()));
   connect (mainUi.blockList, SIGNAL (clicked (const QModelIndex &)),
            this, SLOT (BlockSelect (const QModelIndex &)));
+  connect (mainUi.doneBlockButton, SIGNAL (clicked()),
+           this, SLOT (BlockDone()));
+  connect (mainUi.turnBlockButton, SIGNAL (clicked()),
+           this, SLOT (BlockTurn ()));
+  connect (mainUi.moveBlockButton, SIGNAL (clicked()),
+           this, SLOT (BlockMove ()));
 }
 
 void
@@ -262,6 +270,45 @@ Tiler::BlockSelect (const QModelIndex & index)
     newSpecial->SetColor (Qt::white);
     specialBlock = newSpecial;
     mainUi.scene->update ();
+    mainUi.viewControl->hide();
+    mainUi.blockControl->show ();
+  }
+}
+
+void
+Tiler::BlockDone ()
+{
+  if (specialBlock) {
+    specialBlock->SetColor (savedSpecialColor);
+    specialBlock = 0;
+  }
+  mainUi.blockControl->hide ();
+  mainUi.viewControl->show ();
+}
+
+void
+Tiler::BlockMove ()
+{
+  if (specialBlock) {
+    qreal dx = mainUi.blockX->value();
+    qreal dy = mainUi.blockY->value();
+    qreal dz = mainUi.blockZ->value();
+    specialBlock->Move (QVector3D (dx,dy,dz));
+    mainUi.scene->update ();
+  }
+}
+
+void
+Tiler::BlockTurn ()
+{
+  if (specialBlock) {
+    qreal dx = mainUi.blockX->value();
+    qreal dy = mainUi.blockY->value();
+    qreal dz = mainUi.blockZ->value();
+    specialBlock->Rotate (Axis_Z, dx);
+    specialBlock->Rotate (Axis_Y, dy);
+    specialBlock->Rotate (Axis_Z, dz);
+    mainUi.scene->update();
   }
 }
 

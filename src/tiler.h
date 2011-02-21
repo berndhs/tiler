@@ -65,6 +65,9 @@ private slots:
   void Recolor ();
   void StepShapes ();
   void BlockSelect (const QModelIndex & index);
+  void BlockMove ();
+  void BlockTurn ();
+  void BlockDone ();
 
 private:
 
