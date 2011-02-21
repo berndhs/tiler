@@ -44,13 +44,17 @@ public:
 
   Bond & BondSite (const QVector3D & direction);
 
+  void AddBond (const Bond & bond, const QVector3D & direction);
+
   QVector3D Position () const;
   QQuaternion Orientation () const;
   QColor Color () const;
+  qreal  Scale () const;
 
   void SetPosition (const QVector3D & newPos);
   void SetOrientation (const QQuaternion & newOrient);
   void SetColor (const QColor & col);
+  void SetScale (qreal newScale);
 
   void Move (const QVector3D & delta);
   void Rotate (AxisType axis, float degrees);
@@ -62,6 +66,8 @@ public:
   void paintGL ();
 
 private:
+
+  void paintBondGL (const QVector3D & direction);
 
   typedef struct {
             QVector3D   direction;
@@ -77,6 +83,7 @@ private:
   QVector3D     position;
   QQuaternion   orientation;
   QColor        color;
+  float         scale;
 
   Shape         shape;
 

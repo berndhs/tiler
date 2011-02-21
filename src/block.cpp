@@ -33,7 +33,8 @@ Block::Block ()
   :theId (idCount++),
    position (QVector3D (0,0,0)),
    orientation (QQuaternion()),
-   color (Qt::red)
+   color (Qt::red),
+   scale (1.0)
 {
   noBond.SetType (Bond_None);
 }
@@ -60,6 +61,17 @@ Block::BondSite (const QVector3D & direction)
   return noBond;
 }
 
+void
+Block::AddBond (const Bond & bond, const QVector3D & direction)
+{
+  BondSlot slot;
+  slot.direction = direction.normalized();
+  slot.bond = bond;
+  slot.bond.Clear();
+  bonds.append (slot);
+}
+
+
 QVector3D
 Block::Position () const
 {
@@ -76,6 +88,12 @@ QColor
 Block::Color () const
 {
   return color;
+}
+
+qreal
+Block::Scale () const
+{
+  return scale;
 }
 
 void
@@ -95,6 +113,12 @@ Block::SetOrientation (const QQuaternion & newOrient)
 {
   orientation = newOrient;
   orientation.normalize ();
+}
+
+void
+Block::SetScale (qreal newScale)
+{
+  scale = newScale;
 }
 
 void
@@ -155,7 +179,28 @@ Block::paintGL ()
     rz = orientation.z() / s;
   }
   glRotatef (angle, rx, ry, rz);
+  glScalef (scale, scale, scale);
   shape.paintGL ();
+  int nb = bonds.count();
+  for (int b=0; b<nb; b++) {
+    paintBondGL (bonds.at(b).direction * scale);
+  }
+  glPopMatrix ();
+}
+
+void
+Block::paintBondGL (const QVector3D & direction)
+{
+  glPushMatrix ();
+  GLfloat oldWidth;
+  glGetFloatv (GL_LINE_WIDTH, &oldWidth);
+  glLineWidth (3.0);
+  glColor3f (1.0, 1.0, 0);
+  glBegin (GL_LINES);
+  glVertex3f (0,0,0);
+  glVertex3f (direction.x(), direction.y(), direction.z());
+  glEnd ();
+  glLineWidth (oldWidth);
   glPopMatrix ();
 }
 

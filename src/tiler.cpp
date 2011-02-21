@@ -33,6 +33,7 @@
 
 #include "gl-scene.h"
 #include "block.h"
+#include "bond.h"
 
 using namespace deliberate;
 
@@ -95,6 +96,10 @@ Tiler::Run ()
   Block * blk = new Block;
   blk->SetShape (":/shapes/square.dat");
   blk->SetPosition (QVector3D (10,10,20));
+  blk->SetScale (10.0);
+  Bond bond (Bond_Covalent);
+  bond.SetValue (2.0);
+  blk->AddBond (bond, QVector3D (1,1,0));
   mainUi.scene->AddBlock (blk);
   return true;
 }

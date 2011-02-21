@@ -23,6 +23,7 @@
  ****************************************************************/
 
 #include "bond-functions.h"
+#include <QtOpenGL>
 
 namespace tiler
 {
