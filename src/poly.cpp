@@ -51,11 +51,21 @@ Poly::Corners () const
 }
 
 void
-Poly::paintGL () const
+Poly::paintGL (const QColor & color, const QColor & edgeColor) const
 {
   glPushMatrix ();
-  glBegin (GL_POLYGON);
   int nc = points.count();
+  glColor3f (color.redF(), color.greenF(), color.blueF());
+  glBegin (GL_POLYGON);
+  for (int c=0; c<nc; c++) {
+    glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
+    qDebug () << " Poly::paintGL vertex " << points.at(c).x()
+                                          << points.at(c).y()
+                                          << points.at(c).z();
+  }
+  glEnd ();
+  glColor3f (edgeColor.redF(), edgeColor.greenF(), edgeColor.blueF());
+  glBegin (GL_LINES);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
     qDebug () << " Poly::paintGL vertex " << points.at(c).x()

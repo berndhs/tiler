@@ -25,6 +25,7 @@
 
 #include <QVector3D>
 #include <QList>
+#include <QColor>
 
 namespace tiler
 {
@@ -39,7 +40,7 @@ public:
 
   int Corners () const;
   
-  void paintGL () const;
+  void paintGL (const QColor & color, const QColor & edgeColor) const;
 
 private:
 

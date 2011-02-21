@@ -42,7 +42,7 @@ public:
 
   int Id () { return theId; }
 
-  void paintGL () const;
+  void paintGL (const QColor & color, const QColor & edgeColor) const;
 
 private:
 

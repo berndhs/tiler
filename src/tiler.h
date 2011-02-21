@@ -65,14 +65,20 @@ private slots:
   void Recolor ();
   void StepShapes ();
   void BlockSelect (const QModelIndex & index);
-  void BlockMove ();
-  void BlockTurn ();
   void BlockDone ();
+  void PlusX ();
+  void PlusY ();
+  void PlusZ ();
+  void MinusX ();
+  void MinusY ();
+  void MinusZ ();
 
 private:
 
   void Connect ();
   void CloseCleanup ();
+  void BlockMove (AxisType axis, qreal step);
+  void BlockTurn (AxisType axis, qreal step);
 
   bool             initDone;
   QApplication    *app;
@@ -92,6 +98,9 @@ private:
   QMap <int, Block *>  blocks;
   Block               *specialBlock;
   QColor               savedSpecialColor;
+
+  qreal                moveStep;
+  qreal                turnStep;
 
 };
 

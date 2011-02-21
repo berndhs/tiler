@@ -35,6 +35,8 @@
 #include "block.h"
 #include "bond.h"
 
+#include <cmath>
+
 using namespace deliberate;
 
 namespace tiler
@@ -48,7 +50,9 @@ Tiler::Tiler (QWidget *parent)
    helpView (0),
    runAgain (false),
    blockModel (0),
-   specialBlock (0)
+   specialBlock (0),
+   moveStep (0.2),
+   turnStep (M_PI / 8.0)
 {
   mainUi.setupUi (this);
   mainUi.actionRestart->setEnabled (false);
@@ -98,6 +102,12 @@ Tiler::Run ()
   QSize newsize = Settings().value ("sizes/main", defaultSize).toSize();
   resize (newsize);
   Settings().setValue ("sizes/main",newsize);
+
+  moveStep = Settings().value ("blockcontrol/movestep",moveStep).toReal ();
+  Settings().setValue ("blockcontrol/movestep",moveStep);
+  turnStep = Settings().value ("blockcontrol/turnstep",turnStep).toReal ();
+  Settings().setValue ("blockcontrol/turnstep",turnStep);
+
   show ();
   Block * blk = new Block;
   blk->SetShape (":/shapes/square.dat");
@@ -106,6 +116,7 @@ Tiler::Run ()
   Bond bond (Bond_Covalent);
   bond.SetValue (2.0);
   blk->AddBond (bond, QVector3D (1,1,0));
+  blk->AddBond (bond, QVector3D (0,1,0));
   mainUi.scene->AddBlock (blk);
   blocks[blk->Id()] = blk;
   blockNames.append (QString::number(blk->Id()));
@@ -115,6 +126,7 @@ Tiler::Run ()
   blk->SetPosition (QVector3D (10,20,20));
   blk->SetScale (12.0);
   blk->AddBond (bond, QVector3D (1,1,0));
+  blk->AddBond (bond, QVector3D (0,1,0));
   blk->Rotate (Axis_Z, 60);
   mainUi.scene->AddBlock (blk);
   blocks[blk->Id()] = blk;
@@ -145,10 +157,18 @@ Tiler::Connect ()
            this, SLOT (BlockSelect (const QModelIndex &)));
   connect (mainUi.doneBlockButton, SIGNAL (clicked()),
            this, SLOT (BlockDone()));
-  connect (mainUi.turnBlockButton, SIGNAL (clicked()),
-           this, SLOT (BlockTurn ()));
-  connect (mainUi.moveBlockButton, SIGNAL (clicked()),
-           this, SLOT (BlockMove ()));
+  connect (mainUi.plusXButton, SIGNAL (clicked ()),
+           this, SLOT (PlusX ()));
+  connect (mainUi.minusXButton, SIGNAL (clicked ()),
+           this, SLOT (MinusX ()));
+  connect (mainUi.plusYButton, SIGNAL (clicked ()),
+           this, SLOT (PlusY ()));
+  connect (mainUi.minusYButton, SIGNAL (clicked ()),
+           this, SLOT (MinusY ()));
+  connect (mainUi.plusZButton, SIGNAL (clicked ()),
+           this, SLOT (PlusZ ()));
+  connect (mainUi.minusZButton, SIGNAL (clicked ()),
+           this, SLOT (MinusZ ()));
 }
 
 void
@@ -287,28 +307,94 @@ Tiler::BlockDone ()
 }
 
 void
-Tiler::BlockMove ()
+Tiler::BlockMove (AxisType axis, qreal step)
 {
   if (specialBlock) {
-    qreal dx = mainUi.blockX->value();
-    qreal dy = mainUi.blockY->value();
-    qreal dz = mainUi.blockZ->value();
+    float dx (0.0), dy (0.0), dz (0.0);
+    switch (axis) {
+    case Axis_X:
+      dx = step;
+      break;
+    case Axis_Y:
+      dy = step;
+      break;
+    case Axis_Z:
+      dz = step;
+      break;
+    default:
+      break;
+    }
     specialBlock->Move (QVector3D (dx,dy,dz));
     mainUi.scene->update ();
   }
 }
 
 void
-Tiler::BlockTurn ()
+Tiler::BlockTurn (AxisType axis, qreal step)
 {
   if (specialBlock) {
-    qreal dx = mainUi.blockX->value();
-    qreal dy = mainUi.blockY->value();
-    qreal dz = mainUi.blockZ->value();
-    specialBlock->Rotate (Axis_Z, dx);
-    specialBlock->Rotate (Axis_Y, dy);
-    specialBlock->Rotate (Axis_Z, dz);
+    specialBlock->Rotate (axis, step);
     mainUi.scene->update();
+  }
+}
+
+void
+Tiler::PlusX ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_X, moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_X, turnStep);
+  }
+}
+
+void
+Tiler::MinusX ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_X, - moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_X, - turnStep);
+  }
+}
+
+void
+Tiler::PlusY ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_Y, moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_Y, turnStep);
+  }
+}
+
+void
+Tiler::MinusY ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_Y, - moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_Y, - turnStep);
+  }
+}
+
+void
+Tiler::PlusZ ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_Z, moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_Z, turnStep);
+  }
+}
+
+void
+Tiler::MinusZ ()
+{
+  if (mainUi.moveCheck->isChecked ()) {
+    BlockMove (Axis_Z, - moveStep);
+  } else if (mainUi.turnCheck->isChecked ()) {
+    BlockTurn (Axis_Z, - turnStep);
   }
 }
 

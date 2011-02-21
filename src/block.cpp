@@ -140,6 +140,8 @@ Block::Rotate (AxisType axis, float degrees)
   case Axis_Z:
     orientation *= QQuaternion::fromAxisAndAngle (0,0,1,degrees);
     break;
+  default:
+    break;
   }
   orientation.normalize ();
 }
@@ -167,7 +169,6 @@ void
 Block::paintGL ()
 {
   glPushMatrix ();
-  glColor3f (color.redF(), color.greenF(), color.blueF());
   glTranslatef (position.x(), position.y(), position.z());
   qreal w = orientation.scalar ();
   qreal angle = 2* acos (w) * (180.0 / M_PI);
@@ -180,7 +181,8 @@ Block::paintGL ()
   }
   glRotatef (angle, rx, ry, rz);
   glScalef (scale, scale, scale);
-  shape.paintGL ();
+  QColor edgeColor (color.redF()/2.0, color.greenF()/2.0, color.blueF()/2.0);
+  shape.paintGL (color, edgeColor);
   int nb = bonds.count();
   for (int b=0; b<nb; b++) {
     paintBondGL (bonds.at(b).direction * scale);
