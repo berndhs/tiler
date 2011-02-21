@@ -26,6 +26,8 @@
 #include "config-edit.h"
 #include "helpview.h"
 #include <QVector3D>
+#include <QStringList>
+#include <QStringListModel>
 
 class QApplication;
 
@@ -62,6 +64,7 @@ private slots:
   void Exiting ();
   void Recolor ();
   void StepShapes ();
+  void BlockSelect (const QModelIndex & index);
 
 private:
 
@@ -80,6 +83,12 @@ private:
 
   QVector3D   eye;
   QVector3D   focus;
+  
+  QStringList          blockNames;
+  QStringListModel    *blockModel;
+  QMap <int, Block *>  blocks;
+  Block               *specialBlock;
+  QColor               savedSpecialColor;
 
 };
 

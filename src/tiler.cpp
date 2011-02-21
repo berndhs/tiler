@@ -46,7 +46,9 @@ Tiler::Tiler (QWidget *parent)
    app (0),
    configEdit (this),
    helpView (0),
-   runAgain (false)
+   runAgain (false),
+   blockModel (0),
+   specialBlock (0)
 {
   mainUi.setupUi (this);
   mainUi.actionRestart->setEnabled (false);
@@ -59,6 +61,8 @@ Tiler::Tiler (QWidget *parent)
   mainUi.focusY->setValue (focus.y());
   mainUi.focusZ->setValue (focus.z());
   helpView = new HelpView (this);
+  blockModel = new QStringListModel (this);
+  mainUi.blockList->setModel (blockModel);
   Connect ();
 }
 
@@ -96,11 +100,25 @@ Tiler::Run ()
   Block * blk = new Block;
   blk->SetShape (":/shapes/square.dat");
   blk->SetPosition (QVector3D (10,10,20));
-  blk->SetScale (10.0);
+  blk->SetScale (8.0);
   Bond bond (Bond_Covalent);
   bond.SetValue (2.0);
   blk->AddBond (bond, QVector3D (1,1,0));
   mainUi.scene->AddBlock (blk);
+  blocks[blk->Id()] = blk;
+  blockNames.append (QString::number(blk->Id()));
+
+  blk = new Block;
+  blk->SetShape (":/shapes/square.dat");
+  blk->SetPosition (QVector3D (10,20,20));
+  blk->SetScale (12.0);
+  blk->AddBond (bond, QVector3D (1,1,0));
+  blk->Rotate (Axis_Z, 60);
+  mainUi.scene->AddBlock (blk);
+  blocks[blk->Id()] = blk;
+  blockNames.append (QString::number(blk->Id()));
+
+  blockModel->setStringList (blockNames);
   return true;
 }
 
@@ -121,6 +139,8 @@ Tiler::Connect ()
            this, SLOT (Recolor()));
   connect (mainUi.stepButton, SIGNAL (clicked ()),
            this, SLOT (StepShapes ()));
+  connect (mainUi.blockList, SIGNAL (clicked (const QModelIndex &)),
+           this, SLOT (BlockSelect (const QModelIndex &)));
 }
 
 void
@@ -225,6 +245,24 @@ void
 Tiler::StepShapes ()
 {
   mainUi.scene->update ();
+}
+
+void
+Tiler::BlockSelect (const QModelIndex & index)
+{
+  qDebug () << " selected index " << index;
+  qDebug () << "   data " << blockModel->data (index, 0);
+  int blockid = blockModel->data(index,0).toInt();
+  if (blocks.contains (blockid)) {
+    Block * newSpecial = blocks[blockid];
+    if (specialBlock) {
+      specialBlock->SetColor (savedSpecialColor);
+    }
+    savedSpecialColor = newSpecial->Color();
+    newSpecial->SetColor (Qt::white);
+    specialBlock = newSpecial;
+    mainUi.scene->update ();
+  }
 }
 
 
