@@ -34,8 +34,15 @@ namespace tiler
 int Shape::idCount (1);
 
 Shape::Shape ()
-  :theId (idCount++)
+  :theId (idCount++),
+   radius (0.0)
 {
+}
+
+qreal
+Shape::Radius () const
+{  
+  return radius;
 }
 
 bool
@@ -58,6 +65,10 @@ Shape::Load (const QString & filename)
         fstream >> y;
         fstream >> z;
         poly.AddPoint (x,y,z);
+        qreal dist = QVector3D (x,y,z).length();
+        if (dist > radius) {
+          radius = dist;
+        }
       }
       if (nPoints > 2) {
         theSides += poly;

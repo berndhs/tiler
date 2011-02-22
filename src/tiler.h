@@ -73,6 +73,8 @@ private slots:
   void MinusY ();
   void MinusZ ();
 
+  void HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond);
+
 private:
 
   void Connect ();

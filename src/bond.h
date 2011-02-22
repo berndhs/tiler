@@ -42,16 +42,19 @@ public:
 
   Bond ();
   Bond (const Bond & other);
-  Bond (BondType type);
+  Bond (BondType type, double val = 0.0);
 
   BondType Type () const;
   void     SetType (BondType bondType);
 
   double Value () const;
   double Remaining () const;
+  double Bonded () const;
   void   SetValue (double val);
-  void   SetRemaining (double val);
   void   AddRemaining (double diff);
+
+  double MaxLength () const;
+  void   SetMaxLength (double max);
 
   void   Clear ();
 
@@ -69,6 +72,8 @@ private:
   BondType    type;
   double      value;
   double      remaining;
+  double      bonded;
+  double      maxLength;
 
   static   bool            haveMaps;
   static   MatchMapType    matchFunc;

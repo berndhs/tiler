@@ -35,20 +35,40 @@ Bond::ConnectMapType   Bond::connectFunc;
 
 Bond::Bond ()
   :type(Bond_None),
-   value (0)
+   value (0),
+   remaining (0),
+   bonded (0),
+   maxLength (1.0)
 {
 }
 
 Bond::Bond (const Bond & other)
   :type (other.type),
-   value (other.value)
+   value (other.value),
+   remaining (other.remaining),
+   bonded (other.bonded),
+   maxLength (other.maxLength)
 {
 }
 
-Bond::Bond (BondType bondType)
+Bond::Bond (BondType bondType, double val)
   :type(bondType),
-   value (0)
+   value (val),
+   remaining (val),
+   bonded (0)
 {
+}
+
+double
+Bond::MaxLength () const
+{
+  return maxLength;
+}
+
+void
+Bond::SetMaxLength (double max)
+{
+  maxLength = max;
 }
 
 double
@@ -63,22 +83,24 @@ Bond::Remaining () const
   return remaining;
 }
 
-void
-Bond::SetRemaining (double val)
+double
+Bond::Bonded () const
 {
-  remaining = val;
+  return bonded;
 }
 
 void
 Bond::Clear ()
 {
   remaining = value;
+  bonded = 0;
 }
 
 void
 Bond::AddRemaining (double diff)
 {
   remaining += diff;
+  bonded -= diff;
 }
 
 BondType
@@ -97,6 +119,8 @@ void
 Bond::SetValue (double val)
 { 
   value = val;
+  remaining = val;
+  bonded = 0;
 }
 
 double

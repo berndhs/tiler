@@ -29,12 +29,17 @@
 #include <QVector3D>
 #include <QQuaternion>
 #include <QColor>
+#include <QSet>
+#include <QObject>
 
 namespace tiler
 {
 
-class Block
+class Connect;
+
+class Block : public QObject
 {
+Q_OBJECT
 public:
 
   Block ();
@@ -50,6 +55,7 @@ public:
   QQuaternion Orientation () const;
   QColor Color () const;
   qreal  Scale () const;
+  qreal  Radius () const;
 
   void SetPosition (const QVector3D & newPos);
   void SetOrientation (const QQuaternion & newOrient);
@@ -63,11 +69,19 @@ public:
   void SetShape (const Shape & s);
   void SetShape (const QString & filename);
 
+  void UpdateBonding ();
+
   void paintGL ();
+
+signals:
+
+  void FreeBond (Block * block, const QVector3D & direction, Bond * bond);
 
 private:
 
   void paintBondGL (const QVector3D & direction);
+
+  void BreakConnect (Connect * con);
 
   typedef struct {
             QVector3D   direction;
@@ -79,6 +93,7 @@ private:
   int           theId;
   Bond          noBond;
   BondList      bonds;
+  QSet <Connect*> connections;
 
   QVector3D     position;
   QQuaternion   orientation;

@@ -1,7 +1,6 @@
 #include "poly.h"
 
 
-
 /****************************************************************
  * This file is distributed under the following license:
  *
@@ -59,11 +58,9 @@ Poly::paintGL (const QColor & color, const QColor & edgeColor) const
   glBegin (GL_POLYGON);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
-    qDebug () << " Poly::paintGL vertex " << points.at(c).x()
-                                          << points.at(c).y()
-                                          << points.at(c).z();
   }
   glEnd ();
+
   glColor3f (edgeColor.redF(), edgeColor.greenF(), edgeColor.blueF());
   GLfloat oldWidth;
   glGetFloatv (GL_LINE_WIDTH, &oldWidth);
@@ -71,9 +68,6 @@ Poly::paintGL (const QColor & color, const QColor & edgeColor) const
   glBegin (GL_LINES);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
-    qDebug () << " Poly::paintGL vertex " << points.at(c).x()
-                                          << points.at(c).y()
-                                          << points.at(c).z();
   }
   glEnd ();
   glLineWidth (oldWidth);

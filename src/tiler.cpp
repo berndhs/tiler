@@ -120,6 +120,8 @@ Tiler::Run ()
   mainUi.scene->AddBlock (blk);
   blocks[blk->Id()] = blk;
   blockNames.append (QString::number(blk->Id()));
+  connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
+           this, SLOT (HandleFreeBond (Block *, const QVector3D &, Bond *)));
 
   blk = new Block;
   blk->SetShape (":/shapes/square.dat");
@@ -133,6 +135,8 @@ Tiler::Run ()
   blockNames.append (QString::number(blk->Id()));
 
   blockModel->setStringList (blockNames);
+  connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
+           this, SLOT (HandleFreeBond (Block *, const QVector3D &, Bond *)));
   return true;
 }
 
@@ -325,6 +329,7 @@ Tiler::BlockMove (AxisType axis, qreal step)
       break;
     }
     specialBlock->Move (QVector3D (dx,dy,dz));
+    specialBlock->UpdateBonding ();
     mainUi.scene->update ();
   }
 }
@@ -334,6 +339,7 @@ Tiler::BlockTurn (AxisType axis, qreal step)
 {
   if (specialBlock) {
     specialBlock->Rotate (axis, step);
+    specialBlock->UpdateBonding();
     mainUi.scene->update();
   }
 }
@@ -398,6 +404,12 @@ Tiler::MinusZ ()
   }
 }
 
+
+void 
+Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
+{
+  qDebug () << "Tiler::HandleFreeBond " << block << bond << direction;
+}
 
 } // namespace
 

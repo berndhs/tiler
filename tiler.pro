@@ -75,13 +75,15 @@ HEADERS = \
           src/deliberate.h \
           src/version.h \
           src/helpview.h \
+          src/tiler-types.h \
+          src/tiler-math.h \
           src/gl-scene.h \
           src/poly.h \
           src/shape.h \
-          src/tiler-types.h \
           src/bond.h \
           src/bond-functions.h \
           src/block.h \
+          src/connect.h \
 
 
 SOURCES = \
@@ -99,4 +101,5 @@ SOURCES = \
           src/bond.cpp \
           src/bond-functions.cpp \
           src/block.cpp \
+          src/connect.cpp \
 

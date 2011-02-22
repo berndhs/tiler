@@ -21,7 +21,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
-
+#include "tiler-math.h"
+#include "connect.h"
 #include <QtOpenGL>
 
 namespace tiler
@@ -45,8 +46,10 @@ Block::Block (const Block & other)
    bonds (other.bonds),
    position (other.position),
    orientation (other.orientation),
-   color (other.color)
+   color (other.color),
+   scale (other.scale)
 {
+  connections = other.connections;
 }
 
 Bond &
@@ -94,6 +97,12 @@ qreal
 Block::Scale () const
 {
   return scale;
+}
+
+qreal
+Block::Radius () const
+{
+  return shape.Radius() * scale;
 }
 
 void
@@ -204,6 +213,44 @@ Block::paintBondGL (const QVector3D & direction)
   glEnd ();
   glLineWidth (oldWidth);
   glPopMatrix ();
+}
+
+void
+Block::UpdateBonding ()
+{
+  qDebug () << "Block::UpdateBonding";
+  // first see which bonds will break
+  QSet <Connect*>::iterator sit;
+  qreal mySize = Radius();
+  bool brokeSomething (false);
+  for (sit=connections.begin(); sit != connections.end(); sit++) {
+    Connect *con = *sit;
+    Block *other = con->OtherBlock();
+    double distance = (position - other->Position()).length()
+                      - mySize
+                      - other->Radius();
+    if (distance > con->OtherBond()->MaxLength() 
+       || distance > con->ThisBond()->MaxLength()) {
+      BreakConnect (con);
+      delete (*sit);
+      connections.erase (sit);
+    }
+  }
+  int nb = bonds.count();
+  // then see which bonds will form
+  for (int b=0; b<nb; b++) {
+    qDebug () << "    bond " << b << " remaining " << bonds.at(b).bond.Remaining();
+    qDebug () << "   almost zero says " << almostZero (bonds.at(b).bond.Remaining());
+    if (!almostZero (bonds.at(b).bond.Remaining())) {
+      emit FreeBond (this, bonds.at(b).direction, &(bonds[b].bond));
+    }
+  }
+}
+
+void
+Block::BreakConnect (Connect * con)
+{
+  qDebug () << " BreakConnect " << con;
 }
 
 } // namespace

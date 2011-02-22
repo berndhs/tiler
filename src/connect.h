@@ -1,5 +1,5 @@
-#ifndef TILER_SHAPE_H
-#define TILER_SHAPE_H
+#ifndef TILER_CONNECT_H
+#define TILER_CONNECT_H
 
 
 /****************************************************************
@@ -23,39 +23,36 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
-#include <QVector3D>
-#include <QList>
-#include <QColor>
-
-#include "poly.h"
-#include "tiler-types.h"
 
 namespace tiler
 {
-class Shape 
+class Block;
+class Bond;
+
+class Connect
 {
 public:
-  
-  Shape ();
 
-  bool Load (const QString & filename);
+  Connect (Block * otherblk, Bond * thisbnd, Bond * otherbnd);
+  Connect (const Connect & other);
 
-  int Id () { return theId; }
-  
-  qreal   Radius () const;
+  Block * OtherBlock ();
+  Bond  * OtherBond ();
+  Bond  * ThisBond ();
 
-  void paintGL (const QColor & color, const QColor & edgeColor) const;
+  bool    Broken ();
+  void    Break ();
 
 private:
 
-  int           theId;
-  QList <Poly>  theSides;
-  qreal         radius;
+  Block   *block;
+  Bond    *thisBond;
+  Bond    *otherBond;
 
-  static int    idCount;
-  
+  bool     broken;
 };
 
 } // namespace
+
 
 #endif
