@@ -84,6 +84,7 @@ HEADERS = \
           src/bond-functions.h \
           src/block.h \
           src/connect.h \
+          src/active-bond.h \
 
 
 SOURCES = \
@@ -102,4 +103,5 @@ SOURCES = \
           src/bond-functions.cpp \
           src/block.cpp \
           src/connect.cpp \
+          src/active-bond.cpp \
 

@@ -34,6 +34,9 @@
 #include "gl-scene.h"
 #include "block.h"
 #include "bond.h"
+#include "tiler-math.h"
+#include "connect.h"
+#include <QtGlobal>
 
 #include <cmath>
 
@@ -409,6 +412,48 @@ void
 Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
 {
   qDebug () << "Tiler::HandleFreeBond " << block << bond << direction;
+  ActiveBondList activeBonds;
+  FindNeighbors (block, 
+                 direction, 
+                 bond->MaxLength() + block->Radius(),
+                 activeBonds);
+  BondType  type = bond->Type();
+  qreal remaining = bond->Remaining();
+  if (AlmostZero (remaining)) {
+    return;
+  }
+  ActiveBondList::iterator ait;
+  for (ait=activeBonds.begin(); ait!=activeBonds.end(); ait++) {
+    // see if it is worth bonding
+    Block * otherBlock  = ait->BlockPtr();
+    Bond  * otherBond   = ait->BondPtr();
+    QVector3D reverseDir = ait->Direction();
+    qreal otherRemain = otherBond->Remaining();
+    if (type != otherBond->Type()
+        || AlmostZero (otherRemain)
+        || SameSign (remaining, otherBond->Remaining())) {
+      continue;
+    }
+    qreal reduce = qMin (qAbs (remaining), qAbs (otherRemain));
+    if (remaining < 0.0) {
+      reduce  = - reduce;
+    } 
+    bond->AddRemaining (-reduce);
+    otherBond->AddRemaining (reduce);
+    BlockConn * con = new BlockConn (otherBlock, bond, otherBond);
+    block->AddConnect (con);
+    con = new BlockConn (block, otherBond, bond);
+    otherBlock->AddConnect (con);
+  }
+}
+
+void
+Tiler::FindNeighbors (Block           *block,
+                      QVector3D        direction,
+                      qreal            distance,
+                      ActiveBondList  &list)
+{
+  list.clear ();
 }
 
 } // namespace

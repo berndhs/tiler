@@ -25,6 +25,8 @@
 #include "ui_tiler.h"
 #include "config-edit.h"
 #include "helpview.h"
+#include "active-bond.h"
+#include <QList>
 #include <QVector3D>
 #include <QStringList>
 #include <QStringListModel>
@@ -35,6 +37,8 @@ using namespace deliberate;
 
 namespace tiler 
 {
+
+class BlockConn;
 
 class Tiler : public QMainWindow
 {
@@ -82,6 +86,12 @@ private:
   void BlockMove (AxisType axis, qreal step);
   void BlockTurn (AxisType axis, qreal step);
 
+  void FindNeighbors (Block           *block,
+                      QVector3D        direction,
+                      qreal            distance,
+                      ActiveBondList  &list);
+  
+
   bool             initDone;
   QApplication    *app;
   Ui_TilerMain    mainUi;
@@ -103,6 +113,7 @@ private:
 
   qreal                moveStep;
   qreal                turnStep;
+
 
 };
 

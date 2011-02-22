@@ -1,5 +1,4 @@
-#ifndef TILER_CONNECT_H
-#define TILER_CONNECT_H
+#include "active-bond.h"
 
 
 /****************************************************************
@@ -23,36 +22,41 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
+#include "block.h"
+#include "bond.h"
 
 namespace tiler
 {
-class Block;
-class Bond;
-
-class BlockConn
+ActiveBond::ActiveBond (Block * pBlock, const QVector3D & dir, Bond * pBond)
+  :block (pBlock),
+   direction (dir),
+   bond (pBond)
 {
-public:
+}
 
-  BlockConn (Block * otherblk, Bond * thisbnd, Bond * otherbnd);
-  BlockConn (const BlockConn & other);
+ActiveBond::ActiveBond (const ActiveBond & other)
+  :block (other.block),
+   direction (other.direction),
+   bond (other.bond)
+{
+}
 
-  Block * OtherBlock ();
-  Bond  * OtherBond ();
-  Bond  * ThisBond ();
+Block*
+ActiveBond::BlockPtr ()
+{
+  return block;
+}
 
-  bool    Broken ();
-  void    Break ();
+QVector3D
+ActiveBond::Direction ()
+{
+  return direction;
+}
 
-private:
-
-  Block   *block;
-  Bond    *thisBond;
-  Bond    *otherBond;
-
-  bool     broken;
-};
+Bond*
+ActiveBond::BondPtr ()
+{
+  return bond;
+}
 
 } // namespace
-
-
-#endif

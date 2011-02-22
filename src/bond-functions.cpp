@@ -22,6 +22,7 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 #include "bond.h"
+#include "tiler-math.h"
 
 namespace tiler
 {

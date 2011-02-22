@@ -35,7 +35,7 @@
 namespace tiler
 {
 
-class Connect;
+class BlockConn;
 
 class Block : public QObject
 {
@@ -70,6 +70,9 @@ public:
   void SetShape (const QString & filename);
 
   void UpdateBonding ();
+  void AddConnect (BlockConn * newCon);
+  void RemoveConnect (Block * otherBlock, Bond * thisBond, Bond * otherBond);
+
 
   void paintGL ();
 
@@ -81,7 +84,7 @@ private:
 
   void paintBondGL (const QVector3D & direction);
 
-  void BreakConnect (Connect * con);
+  void BreakConnect (BlockConn * con);
 
   typedef struct {
             QVector3D   direction;
@@ -93,7 +96,7 @@ private:
   int           theId;
   Bond          noBond;
   BondList      bonds;
-  QSet <Connect*> connections;
+  QSet <BlockConn*> connections;
 
   QVector3D     position;
   QQuaternion   orientation;

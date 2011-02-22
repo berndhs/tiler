@@ -1,5 +1,5 @@
-#ifndef TILER_CONNECT_H
-#define TILER_CONNECT_H
+#ifndef TILER_ACTIVE_BOND_H
+#define TILER_ACTIVE_BOND_H
 
 
 /****************************************************************
@@ -23,36 +23,35 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
+#include <QVector3D>
+#include <QList>
 
 namespace tiler
 {
+
 class Block;
 class Bond;
 
-class BlockConn
+class ActiveBond
 {
 public:
 
-  BlockConn (Block * otherblk, Bond * thisbnd, Bond * otherbnd);
-  BlockConn (const BlockConn & other);
+  ActiveBond (Block * pBlock, const QVector3D & dir, Bond * pBond);
+  ActiveBond (const ActiveBond & other);
 
-  Block * OtherBlock ();
-  Bond  * OtherBond ();
-  Bond  * ThisBond ();
-
-  bool    Broken ();
-  void    Break ();
+  Block *    BlockPtr ();
+  QVector3D  Direction ();
+  Bond *     BondPtr ();
 
 private:
 
-  Block   *block;
-  Bond    *thisBond;
-  Bond    *otherBond;
-
-  bool     broken;
+  Block      * block;
+  QVector3D    direction;
+  Bond       * bond;
 };
 
-} // namespace
+typedef QList<ActiveBond>  ActiveBondList;
 
+} // namespace
 
 #endif

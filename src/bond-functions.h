@@ -41,16 +41,6 @@ bool ConnectBond_Covalent (Bond & thisEnd, Bond & otherEnd);
 bool ConnectBond_Metallic (Bond & thisEnd, Bond & otherEnd);
 bool ConnectBond_Aromatic (Bond & thisEnd, Bond & otherEnd);
 
-template <class T> int Signum (T value) 
-  {
-    return (value > T(0)) - (value < T(0));
-  }
-
-template <class T> bool SameSign (T val1, T val2)
-  {
-    return Signum (val1) == Signum (val2);
-  }
-
 } // namespace
 
 #endif

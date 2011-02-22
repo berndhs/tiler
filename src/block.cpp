@@ -31,7 +31,8 @@ namespace tiler
 int Block::idCount (1);
 
 Block::Block ()
-  :theId (idCount++),
+  :QObject (0),
+   theId (idCount++),
    position (QVector3D (0,0,0)),
    orientation (QQuaternion()),
    color (Qt::red),
@@ -41,7 +42,8 @@ Block::Block ()
 }
 
 Block::Block (const Block & other)
-  :theId (other.theId),
+  :QObject (0),
+   theId (other.theId),
    noBond (other.noBond),
    bonds (other.bonds),
    position (other.position),
@@ -220,11 +222,10 @@ Block::UpdateBonding ()
 {
   qDebug () << "Block::UpdateBonding";
   // first see which bonds will break
-  QSet <Connect*>::iterator sit;
+  QSet <BlockConn*>::iterator sit;
   qreal mySize = Radius();
-  bool brokeSomething (false);
   for (sit=connections.begin(); sit != connections.end(); sit++) {
-    Connect *con = *sit;
+    BlockConn *con = *sit;
     Block *other = con->OtherBlock();
     double distance = (position - other->Position()).length()
                       - mySize
@@ -240,17 +241,43 @@ Block::UpdateBonding ()
   // then see which bonds will form
   for (int b=0; b<nb; b++) {
     qDebug () << "    bond " << b << " remaining " << bonds.at(b).bond.Remaining();
-    qDebug () << "   almost zero says " << almostZero (bonds.at(b).bond.Remaining());
-    if (!almostZero (bonds.at(b).bond.Remaining())) {
+    qDebug () << "   almost zero says " << AlmostZero (bonds.at(b).bond.Remaining());
+    if (!AlmostZero (bonds.at(b).bond.Remaining())) {
       emit FreeBond (this, bonds.at(b).direction, &(bonds[b].bond));
     }
   }
 }
 
 void
-Block::BreakConnect (Connect * con)
+Block::BreakConnect (BlockConn * con)
 {
   qDebug () << " BreakConnect " << con;
+  if (con) {
+    Block * otherBlock = con->OtherBlock();
+    if (otherBlock) {
+      otherBlock->RemoveConnect (this, con->OtherBond(), con->ThisBond());
+    }
+  }
+}
+
+void
+Block::AddConnect (BlockConn * con)
+{
+  connections.insert (con);
+}
+
+void
+Block::RemoveConnect (Block * otherBlock, Bond * thisBond, Bond * otherBond)
+{
+  QSet <BlockConn*>::iterator sit;
+  for (sit=connections.begin(); sit != connections.end(); sit++) {
+    if ((*sit)->OtherBlock() == otherBlock
+        && (*sit)->OtherBond() == otherBond
+        && (*sit)->ThisBond() == thisBond) {
+      delete (*sit);
+      connections.erase (sit);
+    }
+  }
 }
 
 } // namespace

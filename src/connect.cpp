@@ -26,7 +26,7 @@
 
 namespace tiler
 {
-Connect::Connect (Block * blk, Bond * thisbnd, Bond * otherbnd)
+BlockConn::BlockConn (Block * blk, Bond * thisbnd, Bond * otherbnd)
   :block (blk),
    thisBond (thisbnd),
    otherBond (otherbnd),
@@ -34,7 +34,7 @@ Connect::Connect (Block * blk, Bond * thisbnd, Bond * otherbnd)
 {
 }
 
-Connect::Connect (const Connect & other)
+BlockConn::BlockConn (const BlockConn & other)
   :block (other.block),
    thisBond (other.thisBond),
    otherBond (other.otherBond),
@@ -43,31 +43,31 @@ Connect::Connect (const Connect & other)
 }
 
 Block *
-Connect::OtherBlock ()
+BlockConn::OtherBlock ()
 {
   return block;
 }
 
 Bond *
-Connect::OtherBond ()
+BlockConn::OtherBond ()
 { 
   return otherBond;
 }
 
 Bond *
-Connect::ThisBond ()
+BlockConn::ThisBond ()
 { 
   return otherBond;
 }
 
 bool
-Connect::Broken ()
+BlockConn::Broken ()
 {
   return broken;
 }
 
 void
-Connect::Break ()
+BlockConn::Break ()
 {
   broken = true;
 }
