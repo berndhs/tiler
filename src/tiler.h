@@ -26,6 +26,7 @@
 #include "config-edit.h"
 #include "helpview.h"
 #include "active-bond.h"
+#include "block-map.h"
 #include <QList>
 #include <QVector3D>
 #include <QStringList>
@@ -107,7 +108,7 @@ private:
   
   QStringList          blockNames;
   QStringListModel    *blockModel;
-  QMap <int, Block *>  blocks;
+  BlockMap             blocks;
   Block               *specialBlock;
   QColor               savedSpecialColor;
 

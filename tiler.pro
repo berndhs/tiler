@@ -85,6 +85,7 @@ HEADERS = \
           src/block.h \
           src/connect.h \
           src/active-bond.h \
+          src/block-map.h \
 
 
 SOURCES = \
@@ -104,4 +105,5 @@ SOURCES = \
           src/block.cpp \
           src/connect.cpp \
           src/active-bond.cpp \
+          src/block-map.cpp \
 

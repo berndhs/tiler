@@ -121,7 +121,7 @@ Tiler::Run ()
   blk->AddBond (bond, QVector3D (1,1,0));
   blk->AddBond (bond, QVector3D (0,1,0));
   mainUi.scene->AddBlock (blk);
-  blocks[blk->Id()] = blk;
+  blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
   connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
            this, SLOT (HandleFreeBond (Block *, const QVector3D &, Bond *)));
@@ -134,7 +134,7 @@ Tiler::Run ()
   blk->AddBond (bond, QVector3D (0,1,0));
   blk->Rotate (Axis_Z, 60);
   mainUi.scene->AddBlock (blk);
-  blocks[blk->Id()] = blk;
+  blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
 
   blockModel->setStringList (blockNames);
@@ -288,8 +288,8 @@ Tiler::BlockSelect (const QModelIndex & index)
   qDebug () << " selected index " << index;
   qDebug () << "   data " << blockModel->data (index, 0);
   int blockid = blockModel->data(index,0).toInt();
-  if (blocks.contains (blockid)) {
-    Block * newSpecial = blocks[blockid];
+  if (blocks.Contains (blockid)) {
+    Block * newSpecial = blocks.GetBlock(blockid);
     if (specialBlock) {
       specialBlock->SetColor (savedSpecialColor);
     }
@@ -332,6 +332,7 @@ Tiler::BlockMove (AxisType axis, qreal step)
       break;
     }
     specialBlock->Move (QVector3D (dx,dy,dz));
+    blocks.BlockMoved (specialBlock);
     specialBlock->UpdateBonding ();
     mainUi.scene->update ();
   }
@@ -454,6 +455,9 @@ Tiler::FindNeighbors (Block           *block,
                       ActiveBondList  &list)
 {
   list.clear ();
+  BlockPtrSet  neighbors;
+  blocks.FindNeighbors (block->Position(), distance, neighbors);
+  qDebug () << " neigbor set size " << neighbors.count();
 }
 
 } // namespace
