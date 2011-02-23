@@ -44,6 +44,8 @@ public:
   Bond (const Bond & other);
   Bond (BondType type, double val = 0.0);
 
+  int Id () { return theId; }
+
   BondType Type () const;
   void     SetType (BondType bondType);
 
@@ -52,6 +54,9 @@ public:
   double Bonded () const;
   void   SetValue (double val);
   void   AddRemaining (double diff);
+
+  double ConeAngle () const;
+  void   SetConeAngle (double a);
 
   double MaxLength () const;
   void   SetMaxLength (double max);
@@ -69,17 +74,22 @@ private:
   typedef QMap <BondType, MatchFunctionPtr > MatchMapType;
   typedef QMap <BondType, ConnectFunctionPtr > ConnectMapType;
   
+
+  int         theId;
   BondType    type;
   double      value;
   double      remaining;
   double      bonded;
   double      maxLength;
+  double      coneAngle;
 
   static   bool            haveMaps;
   static   MatchMapType    matchFunc;
   static   ConnectMapType  connectFunc;
 
   static   void InitMaps ();
+
+  static int    idCount;
 
 };
 

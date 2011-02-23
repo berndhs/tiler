@@ -90,6 +90,7 @@ private:
   void FindNeighbors (Block           *block,
                       QVector3D        direction,
                       qreal            distance,
+                      qreal            coneAngle,
                       ActiveBondList  &list);
   
 

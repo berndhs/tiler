@@ -58,8 +58,13 @@ Bond &
 Block::BondSite (const QVector3D & direction)
 {
   int nb = bonds.count();
+  QVector3D relativeDir = Orientation().rotatedVector(direction).normalized();
   for (int b=0; b<nb; b++) {
-    if ( qFuzzyCompare (bonds.at(b).direction, direction) ) {
+    qreal angle = acos (QVector3D::dotProduct (relativeDir, 
+                                               bonds.at(b).direction)) 
+                  * 180/M_PI;
+    if ( angle < bonds.at(b).bond.ConeAngle()
+         && !AlmostZero( bonds.at(b).bond.Remaining())) {
       return bonds[b].bond;
     }
   }
@@ -198,6 +203,10 @@ Block::paintGL ()
   for (int b=0; b<nb; b++) {
     paintBondGL (bonds.at(b).direction * scale);
   }
+  QSet <BlockConn*>::iterator it;
+  for (it=connections.begin(); it!= connections.end(); it++) {
+    (*it)->paintGL (position);
+  }
   glPopMatrix ();
 }
 
@@ -226,22 +235,34 @@ Block::UpdateBonding ()
   qreal mySize = Radius();
   for (sit=connections.begin(); sit != connections.end(); sit++) {
     BlockConn *con = *sit;
+    if (!con) {
+      qDebug () << " UpdateBonding con " << this << con;
+      continue;
+    }
     Block *other = con->OtherBlock();
+      qDebug () << " UpdateBonding other " << other;
+    if (!other) {
+      continue;
+    }
+    if (con->Broken()) {
+      // dont break it again
+    }
     double distance = (position - other->Position()).length()
                       - mySize
                       - other->Radius();
     if (distance > con->OtherBond()->MaxLength() 
        || distance > con->ThisBond()->MaxLength()) {
+      qDebug () << " try to break connection " << con;
       BreakConnect (con);
-      delete (*sit);
-      connections.erase (sit);
+      qDebug () << " done  breaking connection " << con;
+      //delete (*sit);
+      qDebug () << " done  deallocating " <<  *sit;
+      //connections.erase (sit);
     }
   }
   int nb = bonds.count();
   // then see which bonds will form
   for (int b=0; b<nb; b++) {
-    qDebug () << "    bond " << b << " remaining " << bonds.at(b).bond.Remaining();
-    qDebug () << "   almost zero says " << AlmostZero (bonds.at(b).bond.Remaining());
     if (!AlmostZero (bonds.at(b).bond.Remaining())) {
       emit FreeBond (this, bonds.at(b).direction, &(bonds[b].bond));
     }
@@ -253,11 +274,14 @@ Block::BreakConnect (BlockConn * con)
 {
   qDebug () << " BreakConnect " << con;
   if (con) {
+    con->Break ();
     Block * otherBlock = con->OtherBlock();
+  qDebug () << " BreakConnect " << con << " otherBlock " << otherBlock;
     if (otherBlock) {
       otherBlock->RemoveConnect (this, con->OtherBond(), con->ThisBond());
     }
   }
+  qDebug () << "   done BreakConnect";
 }
 
 void
@@ -269,13 +293,19 @@ Block::AddConnect (BlockConn * con)
 void
 Block::RemoveConnect (Block * otherBlock, Bond * thisBond, Bond * otherBond)
 {
+  qDebug () << " RemoveConnect " << this << otherBlock << thisBond << otherBond;
   QSet <BlockConn*>::iterator sit;
   for (sit=connections.begin(); sit != connections.end(); sit++) {
+    qDebug () << "   RemoveConnect check " << *sit;
     if ((*sit)->OtherBlock() == otherBlock
         && (*sit)->OtherBond() == otherBond
         && (*sit)->ThisBond() == thisBond) {
-      delete (*sit);
-      connections.erase (sit);
+      qDebug () << "   RemoveConnect delete " << *sit;
+      //delete (*sit);
+      //connections.erase (sit);
+      (*sit)->Break();
+    } else {
+      qDebug () << "   RemoveConnect keep " << *sit;
     }
   }
 }

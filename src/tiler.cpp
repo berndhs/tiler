@@ -128,11 +128,12 @@ Tiler::Run ()
 
   blk = new Block;
   blk->SetShape (":/shapes/square.dat");
-  blk->SetPosition (QVector3D (10,50,20));
+  blk->SetPosition (QVector3D (10,30,20));
   blk->SetScale (20.0);
+  bond.SetValue (-2.0);
   blk->AddBond (bond, QVector3D (1,1,0));
   blk->AddBond (bond, QVector3D (0,1,0));
-  blk->Rotate (Axis_Z, 60);
+  blk->Rotate (Axis_Z, 170);
   mainUi.scene->AddBlock (blk);
   blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
@@ -415,24 +416,29 @@ Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
   qDebug () << "Tiler::HandleFreeBond " << block << bond << direction;
   ActiveBondList activeBonds;
   FindNeighbors (block, 
-                 direction, 
+                 block->Orientation().rotatedVector(direction), 
                  bond->MaxLength() + block->Radius(),
+                 bond->ConeAngle(),
                  activeBonds);
   BondType  type = bond->Type();
   qreal remaining = bond->Remaining();
   if (AlmostZero (remaining)) {
     return;
   }
+  qDebug () << " Number of Neighbor bonds " << activeBonds.count ();
   ActiveBondList::iterator ait;
   for (ait=activeBonds.begin(); ait!=activeBonds.end(); ait++) {
     // see if it is worth bonding
     Block * otherBlock  = ait->BlockPtr();
     Bond  * otherBond   = ait->BondPtr();
     QVector3D reverseDir = ait->Direction();
+    qDebug () << "     try bonding with bond " << otherBond->Id() 
+                                     << " on " << otherBlock->Id();
     qreal otherRemain = otherBond->Remaining();
     if (type != otherBond->Type()
         || AlmostZero (otherRemain)
         || SameSign (remaining, otherBond->Remaining())) {
+      qDebug () << "      Bond used up ";
       continue;
     }
     qreal reduce = qMin (qAbs (remaining), qAbs (otherRemain));
@@ -445,6 +451,9 @@ Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
     block->AddConnect (con);
     con = new BlockConn (block, otherBond, bond);
     otherBlock->AddConnect (con);
+    qDebug () << "   connected block " << block->Id() 
+              << " to other " << otherBlock->Id()
+              << " force " << reduce;
   }
 }
 
@@ -452,12 +461,31 @@ void
 Tiler::FindNeighbors (Block           *block,
                       QVector3D        direction,
                       qreal            distance,
+                      qreal            coneAngle,
                       ActiveBondList  &list)
 {
   list.clear ();
   BlockPtrSet  neighbors;
   blocks.FindNeighbors (block->Position(), distance, neighbors);
   qDebug () << " neigbor set size " << neighbors.count();
+  neighbors.remove (block);
+  BlockPtrSet::iterator it;
+  QVector3D dir = direction.normalized();
+  QVector3D pos = block->Position();
+  for (it=neighbors.begin(); it!=neighbors.end(); it++) {
+    Block * neighbor = *it;
+    QVector3D nDir = neighbor->Position() - pos;
+    qDebug () << "       nDir " << nDir;
+    nDir.normalize();
+    qDebug () << "     normal " << nDir;
+    double angle = acos (QVector3D::dotProduct (dir, nDir)) * 180.0/M_PI;
+    bool withinCone = angle < coneAngle;
+    if (withinCone) {
+      Bond & otherBond = neighbor->BondSite (-nDir);
+      qDebug () << "   otherBond " << otherBond.Type() << " from nDir " << nDir;
+      list.append (ActiveBond (neighbor, nDir, &otherBond));
+    }
+  }
 }
 
 } // namespace

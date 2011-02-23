@@ -143,7 +143,6 @@ BlockMap::FindNeighbors (const QVector3D    & origin,
                                qreal          maxDistance,
                                BlockPtrSet  & results) const
 {
-  qDebug () << " BlockMap::FindNeighbors " << origin << maxDistance;
   results.clear ();
   BlockPtrSet  partial;
   FindNeighbors (xIndex, origin.x() - maxDistance, origin.x() + maxDistance,
@@ -170,12 +169,10 @@ BlockMap::FindNeighbors (const DimMapType  & index,
                          qreal         max,
                          BlockPtrSet & result) const
 {
-  qDebug () << " BlockMap::FindNeighbors " << min << max;
   result.clear();
   DimMapType::const_iterator lower = index.lower_bound (min);
   DimMapType::const_iterator chase;
   for (chase = lower; chase != index.end(); chase++) {
-    qDebug () << "     item at " << chase->first << " is " << chase->second;
     if (chase->first > max) {
       break;
     }

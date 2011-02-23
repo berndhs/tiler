@@ -23,6 +23,7 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
+class QVector3D;
 
 namespace tiler
 {
@@ -42,6 +43,8 @@ public:
 
   bool    Broken ();
   void    Break ();
+
+  void    paintGL (const QVector3D & origin);
 
 private:
 

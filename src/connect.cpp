@@ -23,6 +23,7 @@
  ****************************************************************/
 #include "block.h"
 #include "bond.h"
+#include <QtOpenGL>
 
 namespace tiler
 {
@@ -32,6 +33,7 @@ BlockConn::BlockConn (Block * blk, Bond * thisbnd, Bond * otherbnd)
    otherBond (otherbnd),
    broken (false)
 {
+  qDebug () << " create BlockConn  " << this << block << thisBond << otherBond;
 }
 
 BlockConn::BlockConn (const BlockConn & other)
@@ -40,6 +42,7 @@ BlockConn::BlockConn (const BlockConn & other)
    otherBond (other.otherBond),
    broken (other.broken)
 {
+  qDebug () << " copy BlockConn  " << this << block << thisBond << otherBond;
 }
 
 Block *
@@ -71,4 +74,28 @@ BlockConn::Break ()
 {
   broken = true;
 }
+
+void
+BlockConn::paintGL (const QVector3D & origin)
+{
+  if (broken) {
+    return;
+  }
+  QVector3D line = origin - block->Position();
+  //line *= 2.5;
+
+  glPushMatrix ();
+  GLfloat oldWidth;
+  glGetFloatv (GL_LINE_WIDTH, &oldWidth);
+  glLineWidth (5.0);
+  glColor3f (1.0, 0.0, 1.0);
+  glBegin (GL_LINES);
+  glVertex3f (0,0,0);
+  glVertex3f (line.x(), line.y(), line.z());
+  glEnd ();
+  glLineWidth (oldWidth);
+  glPopMatrix ();
+  
+}
+
 } // namespace

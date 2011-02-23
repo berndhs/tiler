@@ -28,34 +28,43 @@
 namespace tiler
 {
 
+int Bond::idCount (1000);
+
 bool Bond::haveMaps (false);
 
 Bond::MatchMapType     Bond::matchFunc;
 Bond::ConnectMapType   Bond::connectFunc;
 
 Bond::Bond ()
-  :type(Bond_None),
+  :theId (idCount++),
+   type(Bond_None),
    value (0),
    remaining (0),
    bonded (0),
-   maxLength (1.0)
+   maxLength (1.0),
+   coneAngle (45.0)
 {
 }
 
 Bond::Bond (const Bond & other)
-  :type (other.type),
+  :theId (other.theId),
+   type (other.type),
    value (other.value),
    remaining (other.remaining),
    bonded (other.bonded),
-   maxLength (other.maxLength)
+   maxLength (other.maxLength),
+   coneAngle (other.coneAngle)
 {
 }
 
 Bond::Bond (BondType bondType, double val)
-  :type(bondType),
+  :theId (idCount++),
+   type(bondType),
    value (val),
    remaining (val),
-   bonded (0)
+   bonded (0),
+   maxLength (1.0),
+   coneAngle (45.0)
 {
 }
 
@@ -75,6 +84,18 @@ double
 Bond::Value () const
 {
   return value;
+}
+
+double
+Bond::ConeAngle () const
+{
+  return coneAngle;
+}
+
+void
+Bond::SetConeAngle (double a)
+{
+  coneAngle = a;
 }
 
 double
