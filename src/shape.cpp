@@ -84,7 +84,6 @@ Shape::Load (const QString & filename)
 void
 Shape::paintGL (const QColor & color, const QColor & edgeColor) const
 {
-  qDebug () << "Shape::paintGL id " << theId << " sides " << theSides.count();
   glPushMatrix ();
   for (int p=0; p<theSides.count(); p++) {
     theSides.at(p).paintGL (color, edgeColor);

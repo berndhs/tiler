@@ -206,7 +206,7 @@ Block::paintGL ()
   }
   glRotatef (angle, rx, ry, rz);
   glScalef (scale, scale, scale);
-  QColor edgeColor (color.redF()/2.0, color.greenF()/2.0, color.blueF()/2.0);
+  QColor edgeColor (Qt::green);
   shape.paintGL (color, edgeColor);
   int nb = bonds.count();
   for (int b=0; b<nb; b++) {

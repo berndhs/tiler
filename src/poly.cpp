@@ -55,21 +55,22 @@ Poly::paintGL (const QColor & color, const QColor & edgeColor) const
   glPushMatrix ();
   int nc = points.count();
   glColor3f (color.redF(), color.greenF(), color.blueF());
-  glBegin (GL_POLYGON);
+  GLfloat oldWidth;
+  glGetFloatv (GL_LINE_WIDTH, &oldWidth);
+  glLineWidth (3.0);
+  glBegin (GL_TRIANGLES);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
   }
   glEnd ();
-
   glColor3f (edgeColor.redF(), edgeColor.greenF(), edgeColor.blueF());
-  GLfloat oldWidth;
-  glGetFloatv (GL_LINE_WIDTH, &oldWidth);
-  glLineWidth (1.5);
   glBegin (GL_LINES);
   for (int c=0; c<nc; c++) {
     glVertex3f (points.at(c).x(), points.at(c).y(), points.at(c).z());
   }
+  glVertex3f (points.at(0).x(), points.at(0).y(), points.at(0).z());
   glEnd ();
+  glFlush();
   glLineWidth (oldWidth);
   glPopMatrix ();
 }

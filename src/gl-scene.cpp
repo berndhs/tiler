@@ -101,6 +101,26 @@ GLScene::Paint ()
 {
   paintGL ();
 }
+void Tetrahedron_draw()
+{
+    static const GLfloat P1[3] = { 0.0, -1.0, +2.0 };
+    static const GLfloat P2[3] = { +1.73205081, -1.0, -1.0 };
+    static const GLfloat P3[3] = { -1.73205081, -1.0, -1.0 };
+    static const GLfloat P4[3] = { 0.0, +2.0, 0.0 };
+    static const GLfloat * const coords[4][3] = {
+        { P1, P2, P3 }, { P1, P3, P4 }, { P1, P4, P2 }, { P2, P4, P3 }
+    };
+    for (int i = 0; i < 4; ++i) {
+        glLoadName(i);
+        glBegin(GL_TRIANGLES);
+        glColor3f(1.0,0.5,0.5);
+        for (int j = 0; j < 3; ++j) {
+            glVertex3f(coords[i][j][0], coords[i][j][1],
+                       coords[i][j][2]);
+        }
+        glEnd();
+    }
+}
 
 void
 GLScene::paintGL ()
@@ -110,16 +130,20 @@ GLScene::paintGL ()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity ();
   gluLookAt (eyeX,eyeY,eyeZ, focusX,focusY,focusZ, 0,-1,0);
-  glPushMatrix ();
-  glRotatef (90, 0,0,1);
-  glPopMatrix ();
   int nBlocks = blocks.count();
+#if 1
   qDebug () << "      block count " << nBlocks;
   QMap<int,Block*>::iterator bit;
   for (bit=blocks.begin(); bit!=blocks.end(); bit++) {
     bit.value()->paintGL ();
   }
   emit paintConnectionsGL ();
+#endif
+#if 0
+  glTranslatef (10,100,20);
+  glScalef (10.0,10.0,10.0);
+  Tetrahedron_draw ();
+#endif
   glFlush ();
 }
 
