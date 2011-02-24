@@ -29,23 +29,26 @@
 #include <QVector3D>
 #include <QQuaternion>
 #include <QColor>
-#include <QSet>
+#include <set>
 #include <QObject>
 
 namespace tiler
 {
 
-class BlockConn;
+class BlockConnectMap;
+class BlockConnect;
 
 class Block : public QObject
 {
 Q_OBJECT
 public:
 
-  Block ();
+  Block (BlockConnectMap *conMap);
   Block (const Block & other);
 
   int Id () { return theId; }
+
+  void Init ();
 
   Bond & BondSite (const QVector3D & direction);
 
@@ -70,11 +73,13 @@ public:
   void SetShape (const QString & filename);
 
   void UpdateBonding ();
-  void AddConnect (BlockConn * newCon);
-  void RemoveConnect (Block * otherBlock, Bond * thisBond, Bond * otherBond);
-
+  void AddConnect (int connId);
+  void RemoveConnect (int connId);
 
   void paintGL ();
+  static void paintConnectionsGL ();
+
+  void SetConnectMap (BlockConnectMap * map);
 
 signals:
 
@@ -84,7 +89,8 @@ private:
 
   void paintBondGL (const QVector3D & direction);
 
-  void BreakConnect (BlockConn * con);
+  bool BreakConnect (int connId);
+  void BreakBonds (BlockConnect & conn);  // break from this side
 
   typedef struct {
             QVector3D   direction;
@@ -96,7 +102,6 @@ private:
   int           theId;
   Bond          noBond;
   BondList      bonds;
-  QSet <BlockConn*> connections;
 
   QVector3D     position;
   QQuaternion   orientation;
@@ -104,8 +109,11 @@ private:
   float         scale;
 
   Shape         shape;
+  std::set <int>    ownConnections;
 
   static int    idCount;
+
+  BlockConnectMap  *connections;
 };
 
 } // namespace

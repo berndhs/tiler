@@ -39,7 +39,7 @@ using namespace deliberate;
 namespace tiler 
 {
 
-class BlockConn;
+class BlockConnectMap;
 
 class Tiler : public QMainWindow
 {
@@ -79,6 +79,7 @@ private slots:
   void MinusZ ();
 
   void HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond);
+  void paintConnectionsGL ();
 
 private:
 
@@ -115,6 +116,8 @@ private:
 
   qreal                moveStep;
   qreal                turnStep;
+
+  BlockConnectMap     *blockConnections;
 
 
 };

@@ -52,6 +52,10 @@ public:
   void Paint ();
   int  AddBlock (Block * b);
 
+signals:
+
+ void paintConnectionsGL ();
+
 protected:
 
   void initializeGL ();

@@ -23,36 +23,79 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 
+#include <QList>
+#include <QPair>
+#include <QMap>
+#include "block.h"
+#include "bond.h"
+
 class QVector3D;
 
 namespace tiler
 {
-class Block;
-class Bond;
 
-class BlockConn
+class BlockBond 
 {
 public:
 
-  BlockConn (Block * otherblk, Bond * thisbnd, Bond * otherbnd);
-  BlockConn (const BlockConn & other);
+  BlockBond (Block * blk, Bond * bnd);
+  BlockBond (const BlockBond & other);
+  BlockBond ();
 
-  Block * OtherBlock ();
-  Bond  * OtherBond ();
-  Bond  * ThisBond ();
-
-  bool    Broken ();
-  void    Break ();
-
-  void    paintGL (const QVector3D & origin);
+  int      Id () const;
+  Block  * BlockPtr () const;
+  Bond   * BondPtr () const;
 
 private:
 
+  int      id;
   Block   *block;
-  Bond    *thisBond;
-  Bond    *otherBond;
+  Bond    *bond;
 
-  bool     broken;
+  static int nextId;
+
+};
+
+class BlockConnect
+{
+public:
+
+  BlockConnect ();
+  BlockConnect (double valence);
+  BlockConnect (const BlockConnect & other);
+
+  int        Id ();
+
+  double     Valence ();
+
+  int        AddBond (const BlockBond & bb);  // return index
+  int        Count ();
+  QList<int> BondList ();
+  BlockBond  Bond (int index);
+  void       RemoveBond (int index);
+
+  void       Break ();
+
+  void       paintGL ();
+
+private:
+
+  int                    id;
+  double                 strength;
+  QMap <int, BlockBond>  bonds;
+
+  static int nextId;
+
+};
+
+//typedef QMap <int, BlockConnect> BlockConnectMap;
+
+class BlockConnectMap : public QMap <int, BlockConnect>
+{
+public:
+
+  bool contains (int key);
+  void Remove (int key);
 };
 
 } // namespace

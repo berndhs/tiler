@@ -23,6 +23,7 @@
  ****************************************************************/
 
 #include <QDebug>
+#include "block.cpp"
 
 namespace tiler
 {
@@ -118,6 +119,7 @@ GLScene::paintGL ()
   for (bit=blocks.begin(); bit!=blocks.end(); bit++) {
     bit.value()->paintGL ();
   }
+  emit paintConnectionsGL ();
   glFlush ();
 }
 

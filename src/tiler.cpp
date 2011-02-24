@@ -35,7 +35,7 @@
 #include "block.h"
 #include "bond.h"
 #include "tiler-math.h"
-#include "connect.h"
+#include "block-connect.h"
 #include <QtGlobal>
 
 #include <cmath>
@@ -72,6 +72,9 @@ Tiler::Tiler (QWidget *parent)
   mainUi.blockList->setModel (blockModel);
   mainUi.viewControl->show();
   mainUi.blockControl->hide ();
+  blockConnections = new BlockConnectMap;
+  connect (mainUi.scene, SIGNAL (paintConnectionsGL ()),
+           this, SLOT (paintConnectionsGL ()));
   Connect ();
 }
 
@@ -112,27 +115,28 @@ Tiler::Run ()
   Settings().setValue ("blockcontrol/turnstep",turnStep);
 
   show ();
-  Block * blk = new Block;
+  Block * blk = new Block (blockConnections);
   blk->SetShape (":/shapes/square.dat");
   blk->SetPosition (QVector3D (10,10,20));
   blk->SetScale (20.0);
-  Bond bond (Bond_Covalent);
-  bond.SetValue (2.0);
-  blk->AddBond (bond, QVector3D (1,1,0));
-  blk->AddBond (bond, QVector3D (0,1,0));
+  Bond bond1 (Bond_Covalent, 2.0);
+  bond1.SetMaxLength (15.0);
+  blk->AddBond (bond1, QVector3D (1,1,0));
+  blk->AddBond (bond1, QVector3D (0,1,0));
   mainUi.scene->AddBlock (blk);
   blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
   connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
            this, SLOT (HandleFreeBond (Block *, const QVector3D &, Bond *)));
 
-  blk = new Block;
+  blk = new Block (blockConnections);
   blk->SetShape (":/shapes/square.dat");
   blk->SetPosition (QVector3D (10,30,20));
   blk->SetScale (20.0);
-  bond.SetValue (-2.0);
-  blk->AddBond (bond, QVector3D (1,1,0));
-  blk->AddBond (bond, QVector3D (0,1,0));
+  Bond bond2 (Bond_Covalent, -2.0);
+  bond2.SetMaxLength (15.0);
+  blk->AddBond (bond2, QVector3D (1,1,0));
+  blk->AddBond (bond2, QVector3D (0,1,0));
   blk->Rotate (Axis_Z, 170);
   mainUi.scene->AddBlock (blk);
   blocks.Insert (blk->Id(), blk);
@@ -422,6 +426,7 @@ Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
                  activeBonds);
   BondType  type = bond->Type();
   qreal remaining = bond->Remaining();
+  int   sense = bond->Sense();
   if (AlmostZero (remaining)) {
     return;
   }
@@ -437,23 +442,25 @@ Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
     qreal otherRemain = otherBond->Remaining();
     if (type != otherBond->Type()
         || AlmostZero (otherRemain)
-        || SameSign (remaining, otherBond->Remaining())) {
+        || SameSign (sense, otherBond->Sense())) {
       qDebug () << "      Bond used up ";
       continue;
     }
     qreal reduce = qMin (qAbs (remaining), qAbs (otherRemain));
-    if (remaining < 0.0) {
-      reduce  = - reduce;
-    } 
     bond->AddRemaining (-reduce);
-    otherBond->AddRemaining (reduce);
-    BlockConn * con = new BlockConn (otherBlock, bond, otherBond);
-    block->AddConnect (con);
-    con = new BlockConn (block, otherBond, bond);
-    otherBlock->AddConnect (con);
-    qDebug () << "   connected block " << block->Id() 
-              << " to other " << otherBlock->Id()
-              << " force " << reduce;
+    otherBond->AddRemaining (-reduce);
+    BlockConnect conn (qAbs (reduce));
+    conn.AddBond (BlockBond (block,bond));
+    conn.AddBond (BlockBond (otherBlock, otherBond));
+    blockConnections->insert (conn.Id(),conn);
+    block->AddConnect (conn.Id());
+    otherBlock->AddConnect (conn.Id());
+    qDebug () << "   connected block " << block->Id() << bond->Id()
+              << " to other " << otherBlock->Id() << otherBond->Id()
+              << " force " << reduce
+              << " was " << remaining << " and " << otherRemain
+              << " is " << bond->Remaining() << " and " 
+              << otherBond->Remaining();
   }
 }
 
@@ -486,6 +493,17 @@ Tiler::FindNeighbors (Block           *block,
       list.append (ActiveBond (neighbor, nDir, &otherBond));
     }
   }
+}
+
+void
+Tiler::paintConnectionsGL ()
+{
+  BlockConnectMap::iterator it;
+  glPushMatrix ();
+  for (it=blockConnections->begin(); it!= blockConnections->end(); it++) {
+    it->paintGL ();
+  }
+  glPopMatrix ();
 }
 
 } // namespace

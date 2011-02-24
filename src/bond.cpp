@@ -21,7 +21,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, 
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
-
+#include "tiler-math.h"
 #include "bond-functions.h"
 #include <QtOpenGL>
 
@@ -35,8 +35,9 @@ bool Bond::haveMaps (false);
 Bond::MatchMapType     Bond::matchFunc;
 Bond::ConnectMapType   Bond::connectFunc;
 
-Bond::Bond ()
+Bond::Bond (int bondSense)
   :theId (idCount++),
+   sense (bondSense),
    type(Bond_None),
    value (0),
    remaining (0),
@@ -48,6 +49,7 @@ Bond::Bond ()
 
 Bond::Bond (const Bond & other)
   :theId (other.theId),
+   sense (other.sense),
    type (other.type),
    value (other.value),
    remaining (other.remaining),
@@ -59,13 +61,20 @@ Bond::Bond (const Bond & other)
 
 Bond::Bond (BondType bondType, double val)
   :theId (idCount++),
+   sense (Signum (val)),
    type(bondType),
-   value (val),
-   remaining (val),
+   value (qAbs (val)),
+   remaining (qAbs (val)),
    bonded (0),
    maxLength (1.0),
    coneAngle (45.0)
 {
+}
+
+int
+Bond::Sense ()
+{
+  return sense;
 }
 
 double

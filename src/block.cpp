@@ -22,23 +22,26 @@
  *  Boston, MA  02110-1301, USA.
  ****************************************************************/
 #include "tiler-math.h"
-#include "connect.h"
+#include "block-connect.h"
 #include <QtOpenGL>
+
+using namespace std;
 
 namespace tiler
 {
 
-int Block::idCount (1);
+int              Block::idCount (3001);
 
-Block::Block ()
+Block::Block (BlockConnectMap *conMap)
   :QObject (0),
    theId (idCount++),
+   noBond (0),
    position (QVector3D (0,0,0)),
    orientation (QQuaternion()),
    color (Qt::red),
-   scale (1.0)
+   scale (1.0),
+   connections (conMap)
 {
-  noBond.SetType (Bond_None);
 }
 
 Block::Block (const Block & other)
@@ -49,9 +52,9 @@ Block::Block (const Block & other)
    position (other.position),
    orientation (other.orientation),
    color (other.color),
-   scale (other.scale)
+   scale (other.scale),
+   connections (other.connections)
 {
-  connections = other.connections;
 }
 
 Bond &
@@ -69,6 +72,12 @@ Block::BondSite (const QVector3D & direction)
     }
   }
   return noBond;
+}
+
+void
+Block::SetConnectMap (BlockConnectMap * map)
+{
+  connections = map;
 }
 
 void
@@ -203,10 +212,6 @@ Block::paintGL ()
   for (int b=0; b<nb; b++) {
     paintBondGL (bonds.at(b).direction * scale);
   }
-  QSet <BlockConn*>::iterator it;
-  for (it=connections.begin(); it!= connections.end(); it++) {
-    (*it)->paintGL (position);
-  }
   glPopMatrix ();
 }
 
@@ -231,37 +236,17 @@ Block::UpdateBonding ()
 {
   qDebug () << "Block::UpdateBonding";
   // first see which bonds will break
-  QSet <BlockConn*>::iterator sit;
-  qreal mySize = Radius();
-  for (sit=connections.begin(); sit != connections.end(); sit++) {
-    BlockConn *con = *sit;
-    if (!con) {
-      qDebug () << " UpdateBonding con " << this << con;
-      continue;
-    }
-    Block *other = con->OtherBlock();
-      qDebug () << " UpdateBonding other " << other;
-    if (!other) {
-      continue;
-    }
-    if (con->Broken()) {
-      // dont break it again
-    }
-    double distance = (position - other->Position()).length()
-                      - mySize
-                      - other->Radius();
-    if (distance > con->OtherBond()->MaxLength() 
-       || distance > con->ThisBond()->MaxLength()) {
-      qDebug () << " try to break connection " << con;
-      BreakConnect (con);
-      qDebug () << " done  breaking connection " << con;
-      //delete (*sit);
-      qDebug () << " done  deallocating " <<  *sit;
-      //connections.erase (sit);
+  set<int>::iterator it;
+  for (it=ownConnections.begin(); it!=ownConnections.end(); it++) {
+    if (BreakConnect (*it)) {
+      ownConnections.erase (it);
+      if (connections->contains (*it)) {
+        connections->Remove (*it);
+      }
     }
   }
+  // then see which new bonds can form
   int nb = bonds.count();
-  // then see which bonds will form
   for (int b=0; b<nb; b++) {
     if (!AlmostZero (bonds.at(b).bond.Remaining())) {
       emit FreeBond (this, bonds.at(b).direction, &(bonds[b].bond));
@@ -270,42 +255,64 @@ Block::UpdateBonding ()
 }
 
 void
-Block::BreakConnect (BlockConn * con)
+Block::AddConnect (int connId)
 {
-  qDebug () << " BreakConnect " << con;
-  if (con) {
-    con->Break ();
-    Block * otherBlock = con->OtherBlock();
-  qDebug () << " BreakConnect " << con << " otherBlock " << otherBlock;
-    if (otherBlock) {
-      otherBlock->RemoveConnect (this, con->OtherBond(), con->ThisBond());
+  ownConnections.insert (connId);
+}
+
+void
+Block::RemoveConnect (int connId)
+{
+  qDebug () << " RemoveConnect " << this << connId;
+  ownConnections.erase (connId);
+}
+
+bool
+Block::BreakConnect (int connId)
+{
+  if (connections->contains (connId)) {
+    BlockConnect  conn ((*connections)[connId]);
+    QList<int> bondList = conn.BondList();
+    int  nb=bondList.count();
+    bool breakIt (false);
+    for (int b=0; b<nb; b++) {
+      BlockBond bb = conn.Bond (bondList.at(b));
+      Block * otherBlock = bb.BlockPtr();
+      Bond * otherBond = bb.BondPtr();
+      if (otherBlock && otherBlock != this) {
+        qreal dist = (position - otherBlock->Position()).length();
+        breakIt |= (otherBond && dist > otherBond->MaxLength ());
+        qDebug () << " BreakConnect dist " << dist << " breakIt " << breakIt;
+      }
     }
-  }
-  qDebug () << "   done BreakConnect";
-}
-
-void
-Block::AddConnect (BlockConn * con)
-{
-  connections.insert (con);
-}
-
-void
-Block::RemoveConnect (Block * otherBlock, Bond * thisBond, Bond * otherBond)
-{
-  qDebug () << " RemoveConnect " << this << otherBlock << thisBond << otherBond;
-  QSet <BlockConn*>::iterator sit;
-  for (sit=connections.begin(); sit != connections.end(); sit++) {
-    qDebug () << "   RemoveConnect check " << *sit;
-    if ((*sit)->OtherBlock() == otherBlock
-        && (*sit)->OtherBond() == otherBond
-        && (*sit)->ThisBond() == thisBond) {
-      qDebug () << "   RemoveConnect delete " << *sit;
-      //delete (*sit);
-      //connections.erase (sit);
-      (*sit)->Break();
+    if (breakIt) {
+      BreakBonds (conn);
+      return true;
     } else {
-      qDebug () << "   RemoveConnect keep " << *sit;
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
+void
+Block::BreakBonds (BlockConnect & conn)
+{
+  int cid = conn.Id();
+  qDebug () << " BreakBonds " << cid;
+  qreal strength = conn.Valence();
+  QList<int> bondList = conn.BondList();
+  int nb = bondList.count();
+  for (int i=0; i<nb; i++) {
+    BlockBond bb = conn.Bond (bondList.at(i));
+    Block * block = bb.BlockPtr();
+    Bond * bond = bb.BondPtr ();
+    if (block && block != this) {
+      block->RemoveConnect (cid);
+    }
+    if (bond) {
+      bond->AddRemaining (strength);
     }
   }
 }

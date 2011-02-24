@@ -29,6 +29,7 @@ namespace tiler
 
 BlockMap::BlockMap ()
 {
+  Clear ();
 }
 
 void
@@ -37,7 +38,7 @@ BlockMap::Insert (int key, Block * block)
   if (block == 0) {
     return;
   }
-  if (blocks.contains (key) || blocks[key] != block) {
+  if (blocks.contains (key)) {
     blocks.remove (key);
     keys.remove (block);
     RemoveDims (block);
@@ -147,18 +148,18 @@ BlockMap::FindNeighbors (const QVector3D    & origin,
   BlockPtrSet  partial;
   FindNeighbors (xIndex, origin.x() - maxDistance, origin.x() + maxDistance,
                  partial);
-  results = partial;
+  BlockPtrSet common (partial);
   FindNeighbors (yIndex, origin.y() - maxDistance, origin.y() + maxDistance,
                  partial);
-  results.intersect (partial);
+  common.intersect (partial);
   
   FindNeighbors (zIndex, origin.z() - maxDistance, origin.z() + maxDistance,
                  partial);
-  results.intersect (partial);
+  common.intersect (partial);
   BlockPtrSet::iterator it;
-  for (it=results.begin(); it!=results.end(); it++) {
-    if ((origin - (*it)->Position()).length() > maxDistance) {
-      results.erase (it);
+  for (it=common.begin(); it!=common.end(); it++) {
+    if ((origin - (*it)->Position()).length() < maxDistance) {
+      results.insert (*it);
     }
   }
 }

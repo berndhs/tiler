@@ -40,7 +40,7 @@ class Bond
 {
 public:
 
-  Bond ();
+  Bond (int bondSense=0);
   Bond (const Bond & other);
   Bond (BondType type, double val = 0.0);
 
@@ -54,6 +54,8 @@ public:
   double Bonded () const;
   void   SetValue (double val);
   void   AddRemaining (double diff);
+
+  int    Sense ();
 
   double ConeAngle () const;
   void   SetConeAngle (double a);
@@ -76,6 +78,7 @@ private:
   
 
   int         theId;
+  int         sense;
   BondType    type;
   double      value;
   double      remaining;
