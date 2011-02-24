@@ -76,7 +76,7 @@ GLScene::resizeGL (int width, int height)
   glViewport(0, 0, GLint(width), GLint(height));
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity(); 
-  glFrustum(-100.0, 100.0, -100.0, 100.0, 3, 1000.0);
+  glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }

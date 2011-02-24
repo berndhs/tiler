@@ -42,9 +42,18 @@ public:
   
   void paintGL (const QColor & color, const QColor & edgeColor) const;
 
+  static void SetDraw (bool wires, bool tris);
+  static bool DrawWires () { return drawWires; }
+  static bool DrawTris () { return drawTris; }
+
+
 private:
 
   QList <QVector3D> points;
+
+  static bool drawWires;
+  static bool drawTris;
+
   
 } ;
 

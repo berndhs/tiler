@@ -114,6 +114,14 @@ Tiler::Run ()
   turnStep = Settings().value ("blockcontrol/turnstep",turnStep).toReal ();
   Settings().setValue ("blockcontrol/turnstep",turnStep);
 
+  bool drawWires = Poly::DrawWires ();
+  bool drawTris  = Poly::DrawTris ();
+  drawWires = Settings().value ("draw/drawwires",drawWires).toBool();
+  drawTris  = Settings().value ("draw/drawtriangles",drawTris).toBool();
+  Settings().setValue ("draw/drawwires",drawWires);
+  Settings().setValue ("draw/drawtriangles",drawTris);
+  Poly::SetDraw (drawWires, drawTris);
+
   show ();
   Block * blk = new Block (blockConnections);
   blk->SetShape (":/shapes/square.dat");
