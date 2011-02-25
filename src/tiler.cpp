@@ -59,6 +59,7 @@ Tiler::Tiler (QWidget *parent)
 {
   mainUi.setupUi (this);
   mainUi.actionRestart->setEnabled (false);
+  Block::SetMessageLog (mainUi.eventLog);
   eye = mainUi.scene->Eye();
   focus = mainUi.scene->Focus();
   mainUi.eyeX->setValue (eye.x());
@@ -463,6 +464,10 @@ Tiler::HandleFreeBond (Block * block, const QVector3D & direction, Bond * bond)
     blockConnections->insert (conn.Id(),conn);
     block->AddConnect (conn.Id());
     otherBlock->AddConnect (conn.Id());
+    QString message (tr("Bonded Block %1 to Block %2")
+                     .arg (block->Id())
+                     .arg (otherBlock->Id()));
+    mainUi.eventLog->append (message);
     qDebug () << "   connected block " << block->Id() << bond->Id()
               << " to other " << otherBlock->Id() << otherBond->Id()
               << " force " << reduce
@@ -490,15 +495,18 @@ Tiler::FindNeighbors (Block           *block,
   for (it=neighbors.begin(); it!=neighbors.end(); it++) {
     Block * neighbor = *it;
     QVector3D nDir = neighbor->Position() - pos;
-    qDebug () << "       nDir " << nDir;
+    qreal dist = nDir.length();
+    qDebug () << "       nDir " << nDir << " distance " << dist;
     nDir.normalize();
     qDebug () << "     normal " << nDir;
     double angle = acos (QVector3D::dotProduct (dir, nDir)) * 180.0/M_PI;
     bool withinCone = angle < coneAngle;
     if (withinCone) {
       Bond & otherBond = neighbor->BondSite (-nDir);
-      qDebug () << "   otherBond " << otherBond.Type() << " from nDir " << nDir;
-      list.append (ActiveBond (neighbor, nDir, &otherBond));
+      if (dist < otherBond.MaxLength()) {
+        qDebug () << "   otherBond " << otherBond.Type() << " from nDir " << nDir;
+        list.append (ActiveBond (neighbor, nDir, &otherBond));
+      }
     }
   }
 }

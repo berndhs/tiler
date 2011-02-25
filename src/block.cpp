@@ -31,6 +31,7 @@ namespace tiler
 {
 
 int              Block::idCount (3001);
+QTextBrowser    *Block::messageLog (0);
 
 Block::Block (BlockConnectMap *conMap)
   :QObject (0),
@@ -55,6 +56,12 @@ Block::Block (const Block & other)
    scale (other.scale),
    connections (other.connections)
 {
+}
+
+void
+Block::SetMessageLog (QTextBrowser * ml)
+{
+  messageLog = ml;
 }
 
 Bond &
@@ -303,6 +310,8 @@ Block::BreakBonds (BlockConnect & conn)
   qDebug () << " BreakBonds " << cid;
   qreal strength = conn.Valence();
   QList<int> bondList = conn.BondList();
+  QString message (tr("Breaking Bond of Blocks "));
+  message.append (tr(" %1").arg (Id()));
   int nb = bondList.count();
   for (int i=0; i<nb; i++) {
     BlockBond bb = conn.Bond (bondList.at(i));
@@ -310,10 +319,14 @@ Block::BreakBonds (BlockConnect & conn)
     Bond * bond = bb.BondPtr ();
     if (block && block != this) {
       block->RemoveConnect (cid);
+      message.append (tr (" %1 ").arg(block->Id()));
     }
     if (bond) {
       bond->AddRemaining (strength);
     }
+  }
+  if (messageLog) {
+    messageLog->append (message);
   }
 }
 

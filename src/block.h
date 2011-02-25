@@ -31,6 +31,7 @@
 #include <QColor>
 #include <set>
 #include <QObject>
+#include <QTextBrowser>
 
 namespace tiler
 {
@@ -81,6 +82,8 @@ public:
 
   void SetConnectMap (BlockConnectMap * map);
 
+  static void SetMessageLog (QTextBrowser * ml);
+
 signals:
 
   void FreeBond (Block * block, const QVector3D & direction, Bond * bond);
@@ -114,6 +117,8 @@ private:
   static int    idCount;
 
   BlockConnectMap  *connections;
+
+  static QTextBrowser  *messageLog;
 };
 
 } // namespace
