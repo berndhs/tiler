@@ -13,10 +13,10 @@ ComboView::ComboView (QWidget *parent)
    background (0)
 {
   //setBackgroundBrush (QBrush (QColor (255,0,0,0),Qt::NoBrush ));
-  //setBackgroundRole (QPalette::Window);
+  setBackgroundRole (QPalette::Window);
   //setAttribute (Qt::WA_TranslucentBackground,true);
   QPalette palette;
-  palette.setColor(QPalette::Base, Qt::transparent);
+  //palette.setColor(QPalette::Base, Qt::blue);
   //setPalette (palette);
 }
 
@@ -30,10 +30,18 @@ ComboView::drawBackground (QPainter * painter, const QRectF & rect)
   }
 }
 
+void 
+ComboView::drawForeground (QPainter * painter, const QRectF & rect)
+{
+  qDebug () << " ComboView::drawForeground " << painter << rect;
+  QDeclarativeView::drawForeground (painter, rect);
+}
+
 void
 ComboView::update ()
 {
   qDebug () << "ComboView::update" << this;
+  QDeclarativeView::update ();
 }
 
 } // namespace

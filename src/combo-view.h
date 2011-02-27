@@ -21,6 +21,7 @@ public:
   void SetGLBackground (GLScene * back) { background = back; }
 
   void drawBackground (QPainter * painter, const QRectF & rect);
+  void drawForeground (QPainter * painter, const QRectF & rect);
 
 public slots:
 

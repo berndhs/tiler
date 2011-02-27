@@ -120,6 +120,7 @@ GLScene::paintGL ()
   glClearColor (red, green, blue, 0.0);
 
   glMatrixMode(GL_PROJECTION);
+  glPushMatrix ();
   glLoadIdentity(); 
   glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
 
@@ -134,7 +135,10 @@ GLScene::paintGL ()
   }
   //emit paintConnectionsGL ();
   glFlush ();
-  //usleep (1000*1000);
+  glMatrixMode (GL_PROJECTION);
+  glPopMatrix ();
+  QGLWidget::paintGL ();
+  //usleep (500*1000);
   CheckBox ("GLScene::paintGL");
 }
 

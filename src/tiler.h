@@ -31,6 +31,10 @@
 #include <QVector3D>
 #include <QStringList>
 #include <QStringListModel>
+#include <QDeclarativeView>
+#include <QDeclarativeContext>
+#include <QDeclarativeComponent>
+#include <QDeclarativeEngine>
 
 class QApplication;
 
@@ -39,6 +43,7 @@ using namespace deliberate;
 namespace tiler 
 {
 
+class BoxInterface;
 class BlockConnectMap;
 class GLScene;
 
@@ -122,7 +127,9 @@ private:
   qreal                turnStep;
 
   BlockConnectMap     *blockConnections;
-
+  BoxInterface    *boxIF;
+  QDeclarativeContext *context;
+  QDeclarativeEngine * engine;
 
 };
 

@@ -36,6 +36,10 @@
 #include "bond.h"
 #include "tiler-math.h"
 #include "block-connect.h"
+
+#include "box-if.h"
+
+
 #include <QtGlobal>
 
 #include <cmath>
@@ -58,9 +62,19 @@ Tiler::Tiler (QWidget *parent)
    turnStep (M_PI / 8.0)
 {
   scene = new GLScene (this);
+  boxIF = new BoxInterface (this);
   mainUi.setupUi (this);
   mainUi.comboView->setViewport (scene);
   mainUi.comboView->SetGLBackground (scene);
+  mainUi.comboView->setSource (QUrl::fromLocalFile ("qml/box.qml"));
+  context = mainUi.comboView->rootContext();
+  engine = mainUi.comboView->engine ();
+  boxIF->SetSize (mainUi.comboView->size());
+  context->setContextProperty("backgroundColor",
+                                 QColor(Qt::green));
+  context->setContextProperty("boxWidth",350);
+  context->setContextProperty("boxHeight",250);
+  context->setContextProperty("cppBox",boxIF);
   mainUi.actionRestart->setEnabled (false);
   Block::SetMessageLog (mainUi.eventLog);
   eye = scene->Eye();

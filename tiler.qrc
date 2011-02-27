@@ -10,4 +10,8 @@
   <file alias="square.dat">data/square.dat</file>
   <file alias="turn.dat">data/pointy.dat</file>
 </qresource>
+<qresource>
+  <file alias="box.qml">qml/box.qml</file>
+  <file alias="RoundButton.qml">qml/RoundButton.qml</file>
+</qresource>
 </RCC>
