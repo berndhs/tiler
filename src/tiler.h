@@ -40,6 +40,7 @@ namespace tiler
 {
 
 class BlockConnectMap;
+class GLScene;
 
 class Tiler : public QMainWindow
 {
@@ -60,6 +61,7 @@ public:
 
 private slots:
 
+  void DoRun ();
   void Quit ();
   void Restart ();
   void EditSettings ();
@@ -87,6 +89,7 @@ private:
   void CloseCleanup ();
   void BlockMove (AxisType axis, qreal step);
   void BlockTurn (AxisType axis, qreal step);
+  void CheckBox (const QString & msg);
 
   void FindNeighbors (Block           *block,
                       QVector3D        direction,
@@ -97,7 +100,8 @@ private:
 
   bool             initDone;
   QApplication    *app;
-  Ui_TilerMain    mainUi;
+  Ui_TilerMain     mainUi;
+  GLScene         *scene;
  
   ConfigEdit       configEdit;
   QStringList      configMessages;

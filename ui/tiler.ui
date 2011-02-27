@@ -37,12 +37,18 @@
          </sizepolicy>
         </property>
        </widget>
-       <widget class="tiler::GLScene" name="scene" native="true">
+       <widget class="tiler::ComboView" name="comboView" native="true">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>40</horstretch>
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>50</horstretch>
           <verstretch>40</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>200</height>
+         </size>
         </property>
        </widget>
       </widget>
@@ -54,7 +60,7 @@
         </sizepolicy>
        </property>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QWidget" name="viewControl" native="true">
@@ -505,9 +511,9 @@
  <layoutdefault spacing="1" margin="1"/>
  <customwidgets>
   <customwidget>
-   <class>tiler::GLScene</class>
+   <class>tiler::ComboView</class>
    <extends>QWidget</extends>
-   <header location="global">src/gl-scene.h</header>
+   <header location="global">src/combo-view.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
@@ -515,7 +521,4 @@
   <include location="../tiler.qrc"/>
  </resources>
  <connections/>
- <buttongroups>
-  <buttongroup name="blcokCheckGroup"/>
- </buttongroups>
 </ui>

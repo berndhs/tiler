@@ -23,13 +23,19 @@
  ****************************************************************/
 
 #include <QDebug>
+#include <QMessageBox>
+#include <QThread>
 #include "block.cpp"
+#include <unistd.h>
 
 namespace tiler
 {
 
+int GLScene::nextId (1111);
+
 GLScene::GLScene (QWidget * parent)
   :QGLWidget (parent),
+   id (nextId++),
    eyeX (0),
    eyeY (0),
    eyeZ (1),
@@ -37,8 +43,10 @@ GLScene::GLScene (QWidget * parent)
    focusY (0),
    focusZ (10)
 {
+  setObjectName (QString ("GLScene_%1").arg(id));
   qDebug () << "GLScene::GLScene constructor";
   qDebug () << "         parent " << parent;    
+  clock.start ();
   show ();
 }
 
@@ -61,10 +69,19 @@ GLScene::AddBlock (Block *b)
 void
 GLScene::initializeGL ()
 {
-  qDebug () << "GLScene::initializeGL";
+  qDebug () << "GLScene::initializeGL double buffer " << doubleBuffer();
+  qDebug () << "         colors " << red << green << blue;
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
   glClearColor (red, green, blue, 0.0);
+  if (doubleBuffer()) {
+    swapBuffers ();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+    glClearColor (red, green, blue, 0.0);
+    swapBuffers ();
+  }
   glEnable(GL_DEPTH_TEST);
   glShadeModel (GL_FLAT);
+  CheckBox ("GLScene::initializeGL");
 
 }
 
@@ -72,13 +89,14 @@ void
 GLScene::resizeGL (int width, int height)
 {
   qDebug () << "GLScene::resizeGL " << width << height;
+  qDebug () << "         colors " << red << green << blue;
   glClearColor (red, green, blue, 0.0);
   glViewport(0, 0, GLint(width), GLint(height));
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity(); 
   glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
   glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  CheckBox ("GLScene::resizeGL");
 }
 
 void
@@ -91,60 +109,33 @@ GLScene::SetRGB (float r, float g, float b)
 }
 
 void
-GLScene::Resize ()
-{
-  resizeGL (width(), height());
-}
-
-void
-GLScene::Paint ()
-{
-  paintGL ();
-}
-void Tetrahedron_draw()
-{
-    static const GLfloat P1[3] = { 0.0, -1.0, +2.0 };
-    static const GLfloat P2[3] = { +1.73205081, -1.0, -1.0 };
-    static const GLfloat P3[3] = { -1.73205081, -1.0, -1.0 };
-    static const GLfloat P4[3] = { 0.0, +2.0, 0.0 };
-    static const GLfloat * const coords[4][3] = {
-        { P1, P2, P3 }, { P1, P3, P4 }, { P1, P4, P2 }, { P2, P4, P3 }
-    };
-    for (int i = 0; i < 4; ++i) {
-        glLoadName(i);
-        glBegin(GL_TRIANGLES);
-        glColor3f(1.0,0.5,0.5);
-        for (int j = 0; j < 3; ++j) {
-            glVertex3f(coords[i][j][0], coords[i][j][1],
-                       coords[i][j][2]);
-        }
-        glEnd();
-    }
-}
-
-void
 GLScene::paintGL ()
 {
-  qDebug () << "GLScene::paint GL";  
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   
+  static int elapsed (0);
+  qDebug () << "GLScene::paint GL";   
+  int ticks = clock.elapsed() - elapsed;
+  elapsed = ticks;
+  qDebug () << "      ticks " << ticks; 
+
+  glClearColor (red, green, blue, 0.0);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity(); 
+  glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity ();
   gluLookAt (eyeX,eyeY,eyeZ, focusX,focusY,focusZ, 0,-1,0);
   int nBlocks = blocks.count();
-#if 1
   qDebug () << "      block count " << nBlocks;
   QMap<int,Block*>::iterator bit;
   for (bit=blocks.begin(); bit!=blocks.end(); bit++) {
     bit.value()->paintGL ();
   }
-  emit paintConnectionsGL ();
-#endif
-#if 0
-  glTranslatef (10,100,20);
-  glScalef (10.0,10.0,10.0);
-  Tetrahedron_draw ();
-#endif
+  //emit paintConnectionsGL ();
   glFlush ();
+  //usleep (1000*1000);
+  CheckBox ("GLScene::paintGL");
 }
 
 
@@ -175,4 +166,22 @@ GLScene::SetFocus (const QVector3D & newFocus)
   focusY = newFocus.y();
   focusZ = newFocus.z();
 }
+
+void
+GLScene::CheckBox (const QString & msg)
+{
+  static int count (1);
+  qDebug () << "GLScene::CheckBox " << objectName() << msg;
+  qDebug () << "            size  " << size();
+  qDebug () << "           pos    " << pos();
+  return;
+  QMessageBox box;
+  box.setText (QString ("%1 wait %3 after %2")
+                        .arg(objectName())
+                        .arg(msg)
+                        .arg(count++));
+  QTimer::singleShot (250, &box, SLOT (accept()));
+  box.exec ();
+}
+
 } // namespace

@@ -25,6 +25,7 @@
 
 #include <QGLWidget>
 #include <QMap>
+#include <QTime>
 #include "block.h"
 #include "tiler-types.h"
 
@@ -39,6 +40,8 @@ public:
 
   GLScene (QWidget * parent=0);
 
+  int Id ();
+
   void Init ();
   void SetRGB (float r, float g, float b);
 
@@ -48,8 +51,6 @@ public:
   void SetEye (const QVector3D & newEye);
   void SetFocus (const QVector3D & newFocus);
 
-  void Resize ();
-  void Paint ();
   int  AddBlock (Block * b);
 
 signals:
@@ -64,6 +65,9 @@ protected:
   
 private:
 
+  void CheckBox (const QString & msg);
+
+  int      id;
   float    red;
   float    green;
   float    blue;
@@ -73,8 +77,11 @@ private:
   float    focusX;
   float    focusY;
   float    focusZ;
+  QTime    clock;
 
   QMap <int,Block*>  blocks;
+
+  static int nextId;
 
 };
 

@@ -57,11 +57,14 @@ Tiler::Tiler (QWidget *parent)
    moveStep (0.2),
    turnStep (M_PI / 8.0)
 {
+  scene = new GLScene (this);
   mainUi.setupUi (this);
+  mainUi.comboView->setViewport (scene);
+  mainUi.comboView->SetGLBackground (scene);
   mainUi.actionRestart->setEnabled (false);
   Block::SetMessageLog (mainUi.eventLog);
-  eye = mainUi.scene->Eye();
-  focus = mainUi.scene->Focus();
+  eye = scene->Eye();
+  focus = scene->Focus();
   mainUi.eyeX->setValue (eye.x());
   mainUi.eyeY->setValue (eye.y());
   mainUi.eyeZ->setValue (eye.z());
@@ -74,7 +77,7 @@ Tiler::Tiler (QWidget *parent)
   mainUi.viewControl->show();
   mainUi.blockControl->hide ();
   blockConnections = new BlockConnectMap;
-  connect (mainUi.scene, SIGNAL (paintConnectionsGL ()),
+  connect (scene, SIGNAL (paintConnectionsGL ()),
            this, SLOT (paintConnectionsGL ()));
   Connect ();
 }
@@ -104,7 +107,7 @@ Tiler::Run ()
     Quit ();
     return false;
   }
-  qDebug () << " Start Tiler";
+  qDebug () << " Start Tiler " << objectName();
   QSize defaultSize = size();
   QSize newsize = Settings().value ("sizes/main", defaultSize).toSize();
   resize (newsize);
@@ -132,7 +135,7 @@ Tiler::Run ()
   bond1.SetMaxLength (15.0);
   blk->AddBond (bond1, QVector3D (1,1,0));
   blk->AddBond (bond1, QVector3D (0,1,0));
-  mainUi.scene->AddBlock (blk);
+  scene->AddBlock (blk);
   blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
   connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
@@ -147,13 +150,14 @@ Tiler::Run ()
   blk->AddBond (bond2, QVector3D (1,1,0));
   blk->AddBond (bond2, QVector3D (0,1,0));
   blk->Rotate (Axis_Z, 170);
-  mainUi.scene->AddBlock (blk);
+  scene->AddBlock (blk);
   blocks.Insert (blk->Id(), blk);
   blockNames.append (QString::number(blk->Id()));
 
   blockModel->setStringList (blockNames);
   connect (blk, SIGNAL (FreeBond (Block *, const QVector3D &, Bond *)),
            this, SLOT (HandleFreeBond (Block *, const QVector3D &, Bond *)));
+  mainUi.comboView->repaint ();
   return true;
 }
 
@@ -190,6 +194,12 @@ Tiler::Connect ()
            this, SLOT (PlusZ ()));
   connect (mainUi.minusZButton, SIGNAL (clicked ()),
            this, SLOT (MinusZ ()));
+}
+
+void
+Tiler::DoRun ()
+{
+  Run ();
 }
 
 void
@@ -275,7 +285,7 @@ Tiler::Recolor ()
   qDebug () << " Recolor " << mainUi.redBox->value()
                            << mainUi.greenBox->value()
                            << mainUi.blueBox->value() ;
-  mainUi.scene->SetRGB (mainUi.redBox->value(),
+  scene->SetRGB (mainUi.redBox->value(),
                         mainUi.greenBox->value(),
                         mainUi.blueBox->value());
   eye.setX (mainUi.eyeX->value());
@@ -284,16 +294,15 @@ Tiler::Recolor ()
   focus.setX (mainUi.focusX->value());
   focus.setY (mainUi.focusY->value());
   focus.setZ (mainUi.focusZ->value());
-  mainUi.scene->SetEye (eye);
-  mainUi.scene->SetFocus (focus);
-  mainUi.scene->Resize ();
-  mainUi.scene->update ();
+  scene->SetEye (eye);
+  scene->SetFocus (focus);
+  mainUi.comboView->update ();
 }
 
 void
 Tiler::StepShapes ()
 {
-  mainUi.scene->update ();
+  mainUi.comboView->update ();
 }
 
 void
@@ -310,7 +319,8 @@ Tiler::BlockSelect (const QModelIndex & index)
     savedSpecialColor = newSpecial->Color();
     newSpecial->SetColor (Qt::white);
     specialBlock = newSpecial;
-    mainUi.scene->update ();
+    mainUi.comboView->repaint ();
+    scene->repaint ();
     mainUi.viewControl->hide();
     mainUi.blockControl->show ();
   }
@@ -348,7 +358,8 @@ Tiler::BlockMove (AxisType axis, qreal step)
     specialBlock->Move (QVector3D (dx,dy,dz));
     blocks.BlockMoved (specialBlock);
     specialBlock->UpdateBonding ();
-    mainUi.scene->update ();
+    mainUi.comboView->repaint ();
+    scene->repaint ();
   }
 }
 
@@ -358,7 +369,8 @@ Tiler::BlockTurn (AxisType axis, qreal step)
   if (specialBlock) {
     specialBlock->Rotate (axis, step);
     specialBlock->UpdateBonding();
-    mainUi.scene->update();
+    mainUi.comboView->update();
+    scene->repaint ();
   }
 }
 
@@ -520,6 +532,22 @@ Tiler::paintConnectionsGL ()
     it->paintGL ();
   }
   glPopMatrix ();
+}
+
+void
+Tiler::CheckBox (const QString & msg)
+{
+  static int count (1);
+  qDebug () << "Tiler::CheckBox " << objectName() << msg;
+  qDebug () << "            size  " << size();
+  qDebug () << "           pos    " << pos();
+  QMessageBox box;
+  box.setText (QString ("%1 wait %3 after %2")
+                        .arg(objectName())
+                        .arg(msg)
+                        .arg(count++));
+  //QTimer::singleShot (250, &box, SLOT (accept()));
+  box.exec ();
 }
 
 } // namespace

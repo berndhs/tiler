@@ -1,5 +1,5 @@
-#ifndef TILERMAIN_H
-#define TILERAIN_H
+#ifndef TILER_MAIN_H
+#define TILER_MAIN_H
 
 /****************************************************************
  * This file is distributed under the following license:

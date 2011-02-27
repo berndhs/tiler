@@ -1,5 +1,5 @@
 
-#include "main.h"
+#include "tiler-main.h"
 
 /****************************************************************
  * This file is distributed under the following license:
@@ -24,6 +24,7 @@
 
 
 #include <QApplication>
+#include <QTimer>
 #include "deliberate.h"
 #include "version.h"
 #include "cmdoptions.h"

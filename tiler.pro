@@ -27,8 +27,10 @@ MYNAME = tiler
 
 TEMPLATE = app
 
-QT += core gui sql webkit network xml opengl
+QT += core gui sql webkit network xml opengl declarative
 CONFIG += debug_and_release
+
+INCLUDEPATH += src
 
 MAKEFILE = Make_$${MYNAME}
 !include ("options.pri") {
@@ -66,8 +68,8 @@ FORMS = \
         
 
 HEADERS = \
-          src/$${MYNAME}.h \
-          src/main.h \
+          src/tiler.h \
+          src/tiler-main.h \
           src/gpl2.h \
           src/cmdoptions.h \
           src/config-edit.h \
@@ -78,6 +80,7 @@ HEADERS = \
           src/tiler-types.h \
           src/tiler-math.h \
           src/gl-scene.h \
+          src/combo-view.h \
           src/poly.h \
           src/shape.h \
           src/bond.h \
@@ -89,8 +92,8 @@ HEADERS = \
 
 
 SOURCES = \
-          src/$${MYNAME}.cpp \
-          src/main.cpp \
+          src/tiler.cpp \
+          src/tiler-main.cpp \
           src/cmdoptions.cpp \
           src/config-edit.cpp \
           src/delib-debug.cpp \
@@ -98,6 +101,7 @@ SOURCES = \
           src/version.cpp \
           src/helpview.cpp \
           src/gl-scene.cpp \
+          src/combo-view.cpp \
           src/poly.cpp \
           src/shape.cpp \
           src/bond.cpp \
