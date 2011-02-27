@@ -243,6 +243,7 @@ showmsg () {
 }
 
 echo "" > config.last
+showmsg `date -R`
 showmsg ""
 showmsg 'qmake is..................' $QMAKE
 showmsg 'Installation prefix is....' $PREFIX 
