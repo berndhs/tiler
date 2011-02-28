@@ -48,7 +48,7 @@ BoxInterface::SendSize (int h, int w)
 void
 BoxInterface::Clicked ()
 {
-  qDebug () << " Clicked Box";
+  qDebug () << " Little Clicked Box";
   CheckBox ("BoxInterface::Clicked Box");
 }
 

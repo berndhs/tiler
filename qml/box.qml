@@ -7,7 +7,8 @@ Rectangle {
   radius: 8
   rotation: 0
   objectName: "qmlBox"
-  color: "transparent"
+  color: "yellow"
+  opacity: 0.2
   border.color: "black"
   RotationAnimation on rotation { 
     id: turnit
@@ -40,6 +41,12 @@ Rectangle {
   function changeText (newText) {
     centralText.text = newText
     turnit.pause(); 
+  }
+  MouseArea {
+    anchors.fill: parent
+    onClicked: {
+      cppBox.BigClicked (mouseX, mouseY);
+    }
   }
   RoundButton {
     id: theButton
@@ -86,11 +93,5 @@ Rectangle {
     id: centralText
     anchors.centerIn: parent
     text: "Hello Yellow World!"
-  }
-  MouseArea {
-    anchors.fill: parent
-    onClicked: {
-      cppBox.BigClicked (mouseX, mouseY);
-    }
   }
 }
