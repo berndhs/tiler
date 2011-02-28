@@ -77,8 +77,7 @@ private:
   float    focusX;
   float    focusY;
   float    focusZ;
-  QTime    clock;
-
+  
   QMap <int,Block*>  blocks;
 
   static int nextId;

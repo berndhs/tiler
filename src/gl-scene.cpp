@@ -45,8 +45,7 @@ GLScene::GLScene (QWidget * parent)
 {
   setObjectName (QString ("GLScene_%1").arg(id));
   qDebug () << "GLScene::GLScene constructor";
-  qDebug () << "         parent " << parent;    
-  clock.start ();
+  qDebug () << "         parent " << parent;  
   show ();
 }
 
@@ -90,11 +89,12 @@ GLScene::resizeGL (int width, int height)
 {
   qDebug () << "GLScene::resizeGL " << width << height;
   qDebug () << "         colors " << red << green << blue;
+  float size = 0.01 * tanf (45.0/(360.0/M_PI));
   glClearColor (red, green, blue, 0.0);
   glViewport(0, 0, GLint(width), GLint(height));
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity(); 
-  glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
+  glFrustum(-200.0, 200.0, -200.0, 200.0, 150, 400.0);
   glMatrixMode(GL_MODELVIEW);
   CheckBox ("GLScene::resizeGL");
 }
@@ -111,18 +111,12 @@ GLScene::SetRGB (float r, float g, float b)
 void
 GLScene::paintGL ()
 {
-  static int elapsed (0);
-  qDebug () << "GLScene::paint GL";   
-  int ticks = clock.elapsed() - elapsed;
-  elapsed = ticks;
-  qDebug () << "      ticks " << ticks; 
-
   //glClearColor (red, green, blue, 0.0);
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix ();
   glLoadIdentity(); 
-  glFrustum(-200.0, 200.0, -200.0, 200.0, 3, 400.0);
+  glFrustum(-200.0, 200.0, -200.0, 200.0, 150, 400.0);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity ();
