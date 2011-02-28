@@ -117,7 +117,7 @@ GLScene::paintGL ()
   elapsed = ticks;
   qDebug () << "      ticks " << ticks; 
 
-  glClearColor (red, green, blue, 0.0);
+  //glClearColor (red, green, blue, 0.0);
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix ();
@@ -133,11 +133,13 @@ GLScene::paintGL ()
   for (bit=blocks.begin(); bit!=blocks.end(); bit++) {
     bit.value()->paintGL ();
   }
-  //emit paintConnectionsGL ();
-  glFlush ();
+  emit paintConnectionsGL ();
+  //glFlush ();
+  #if 1
   glMatrixMode (GL_PROJECTION);
   glPopMatrix ();
-  QGLWidget::paintGL ();
+  //QGLWidget::paintGL ();
+  #endif
   //usleep (500*1000);
   CheckBox ("GLScene::paintGL");
 }

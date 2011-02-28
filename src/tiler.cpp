@@ -67,6 +67,13 @@ Tiler::Tiler (QWidget *parent)
   mainUi.comboView->setViewport (scene);
   mainUi.comboView->SetGLBackground (scene);
   mainUi.comboView->setSource (QUrl::fromLocalFile ("qml/box.qml"));
+
+#if 1
+mainUi.comboView->setAttribute(Qt::WA_OpaquePaintEvent);
+mainUi.comboView->setAttribute(Qt::WA_NoSystemBackground);
+mainUi.comboView->viewport()->setAttribute(Qt::WA_OpaquePaintEvent);
+mainUi.comboView->viewport()->setAttribute(Qt::WA_NoSystemBackground);
+#endif
   context = mainUi.comboView->rootContext();
   engine = mainUi.comboView->engine ();
   boxIF->SetSize (mainUi.comboView->size());
